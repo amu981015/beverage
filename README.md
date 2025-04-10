@@ -1,66 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧩 Laravel 餐飲點餐系統（分支：laravel）
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+本分支使用 Laravel 架構開發，前後台皆整合 Blade 模板、Vue（CDN）與 Bootstrap，並搭配 MVC 架構撰寫控制器與模型，具備前台訂餐與多層後台管理功能，展現完整網站開發能力。
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📌 系統架構說明
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🖥️ 前台功能（使用 Blade 模板引擎）
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 使用 `index.blade.php` 作為主版型。
+  - 透過 `@include` 匯入 `banner`、header、footer 等共用元件。
+  - 透過 `@yield` 匯入對應內容頁（如 `menu`, `map`, `about` 等）。
+- **地圖查詢功能：**
+  - 在 map 頁面整合 `leaflet.markercluster`，使用者可互動查詢所有分店位置。
+- **動態菜單顯示：**
+  - menu 頁面會根據後台資料庫狀態，動態顯示已上架餐點，實現即時同步。
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🔧 後台功能（支援多層級管理）
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- 採用 HTML + Bootstrap + jQuery + Vue（CDN）+ Blade 模板開發。
+- 使用 Vue 的 `v-if` 控制頁面切換，無需重新載入頁面。
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| 頁面                        | 使用者角色       | 功能簡述                                                   |
+|-----------------------------|------------------|------------------------------------------------------------|
+| `admin.blade.php`           | 一般用戶         | 點餐功能、查看個人訂單記錄                                 |
+| `storebackground.blade.php` | 分店店長         | 查看分店訂單、報表統計                                     |
+| `background.blade.php`      | 總公司管理者     | 菜單管理、店長管理、全店訂單與報表檢視                     |
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## 🧠 MVC 架構實作
 
-### Premium Partners
+| 架構層級  | 說明                                                                 |
+|-----------|----------------------------------------------------------------------|
+| Model     | 定義 `Menu`、`Store`、`Order` 等資料模型，對應資料表並封裝邏輯         |
+| View      | 使用 Blade 模板語法撰寫各前後台畫面，搭配 Vue 進行動態畫面控制         |
+| Controller| 控制器負責接收請求、處理資料與商業邏輯，並回傳對應 View 或 JSON 結果 |
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+例如：
 
-## Contributing
+- `MenuController` 負責處理菜單資料的顯示、上下架。
+- `OrderController` 管理訂單新增、查詢。
+- `UserController` 處理登入註冊、身分認證邏輯。
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🔗 API 說明
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- 所有資料互動由 Laravel Route 設定對應控制器處理，並使用內建 Request 驗證。
+- 回傳格式包含 JSON 結構，用於 Vue 與 AJAX 呼叫。
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🧰 使用技術
 
-## License
+| 分類        | 技術 / 工具                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| 🔧 前端      | HTML5、CSS3、Bootstrap、JavaScript、jQuery、Vue（CDN）、Blade、Leaflet.markercluster |
+| 🖥️ 後端     | Laravel、PHP                                                                 |
+| 💾 資料庫    | MySQL                                                                       |
+| 🛠️ 其他工具 | Git / GitHub、Figma、Composer、Artisan CLI                                  |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
