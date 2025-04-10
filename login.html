@@ -1,0 +1,109 @@
+<div class="container mt-5">
+  <h1 class="text-center">會員登入</h1>
+  <div class="mb-3">
+    <label for="username_login" class="form-label">帳號</label>
+    <input
+      type="text"
+      class="form-control is-invalid"
+      id="username_login"
+      name="username_login"
+    />
+    <div class="invalid-feedback">請輸入帳號</div>
+  </div>
+  <div class="mb-3">
+    <label for="password_login" class="form-label">密碼</label>
+    <input
+      type="password"
+      class="form-control is-invalid"
+      id="password_login"
+      name="password_login"
+    />
+    <div class="invalid-feedback">請輸入密碼</div>
+  </div>
+
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary" id="login_btn">登入</button>
+  </div>
+</div>
+<script>
+  var flag_username_login = false;
+  var flag_password_login = false;
+  $(function () {
+    $("#username_login").bind("input propertychange", function () {
+      if ($(this).val().length > 0) {
+        $(this).removeClass("is-invalid");
+        flag_username_login = true;
+      } else {
+        $(this).addClass("is-invalid");
+        flag_username_login = false;
+      }
+    });
+
+    $("#password_login").bind("input propertychange", function () {
+      if ($(this).val().length > 0) {
+        $(this).removeClass("is-invalid");
+        flag_password_login = true;
+      } else {
+        $(this).addClass("is-invalid");
+        flag_password_login = false;
+      }
+    });
+
+    $("#login_btn").click(function () {
+      if (flag_username_login && flag_password_login) {
+        var JSONdata = {};
+        JSONdata["username"] = $("#username_login").val();
+        JSONdata["password"] = $("#password_login").val();
+        console.log(JSON.stringify(JSONdata));
+        $.ajax({
+          type: "POST",
+          url: "member_control_api_v1.php?action=login",
+          data: JSON.stringify(JSONdata),
+          dataType: "json",
+          success: showdata_login,
+          error: function () {
+            Swal.fire({
+              title: "API介接錯誤?",
+              text: "member_control_api_v1.php?action=login",
+              icon: "error",
+            });
+          },
+        });
+      } else {
+        Swal.fire({
+          title: "輸入錯誤!",
+          text: "請輸入帳號和密碼!",
+          icon: "error",
+        });
+      }
+    });
+  });
+
+  function showdata_login(data) {
+    console.log(data);
+    if (data.state) {
+      Swal.fire({
+        title: data.message,
+        allowOutsideClick:false,
+        icon: "success",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $("#loginModal").modal("hide");
+          $("#s02_reg_btn").hide();
+          $("#s02_login_btn").hide();
+          $("#s02_welcome_user").removeClass("d-none");
+          $("#s02_username_text").text(data.data.username);
+          $("#s02_logout_btn").removeClass("d-none");
+          $("#s02_background_btn").removeClass("d-none");
+          setCookie("Uid01", data.data.Uid01, 7);
+          location.href = "index.html";
+        }
+      });
+    } else {
+      Swal.fire({
+        title: data.message,
+        icon: "error",
+      });
+    }
+  }
+</script>

@@ -1,0 +1,118 @@
+<style>
+  .line {
+    display: inline-block;
+    width: 100%;
+    text-align: left;
+  }
+
+  .line::before {
+    content: "--------";
+    font-weight: bold;
+  }
+
+  .line span {
+    display: inline-block;
+  }
+
+  @media (max-width: 576px) {
+    .line::before {
+      content: "----";
+    }
+  }
+
+  @media (max-width: 768px) {
+    .line::before {
+      content: "---";
+    }
+  }
+
+  @media (max-width: 992px) {
+    .line::before {
+      content: "--";
+    }
+  }
+</style>
+<div class="container">
+  <div class="row m-3" id="menu-container">
+    <div class="col-md-6 col-lg-4">
+      <div>
+        <div class="h3">原味茶</div>
+        <div>
+          <ul>
+            <li class="row">
+              <div class="h4">糯米香茶<span class=""> 40 </span></div>
+            </li>
+            <li class="row">
+              <div class="h4">島韻紅茶<span class=""> 40 </span></div>
+            </li>
+            <li class="row">
+              <div class="h4">炭培烏龍<span class=""> 35 </span></div>
+            </li>
+            <li class="row">
+              <div class="h4">
+                油切蕎麥茶(推薦無糖)<span class=""> 35 </span>
+              </div>
+            </li>
+            <li class="row">
+              <div class="h4">手採高山青<span class=""> 35 </span></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $.ajax({
+    type: "GET",
+    url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allupmenu",
+    dataType: "json",
+    async: false,
+    success: function (data) {
+      var menu = data.data;
+
+      var categories = {};
+
+      menu.forEach(function (item) {
+        if (!categories[item.category]) {
+          categories[item.category] = [];
+        }
+        categories[item.category].push(item);
+      });
+      $("#menu-container").empty();
+      for (var category in categories) {
+        var categoryDiv = `
+          <div class="col-md-6 col-lg-4"> <!-- 建立一個新的 div 來容納這個分類 -->
+            <div>
+              <div class="h3">${category}</div> <!-- 顯示 category 名稱 -->
+              <div>
+                <ul>
+                  ${categories[category]
+                    .map((item) => {
+                      return `
+                      <li class="row">
+                        <div class="h4">${item.name} <span class=""> ${item.price} </span></div> <!-- 顯示每個項目的名稱和價格 -->
+                      </li>
+                    `;
+                    })
+                    .join(
+                      ""
+                    )} <!-- 使用 join() 來將所有的 <li> 項目合併為一個長字串，並插入到 <ul> 中 -->
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+
+        $("#menu-container").append(categoryDiv);
+      }
+    },
+    error: function () {
+      Swal.fire({
+        title: "API介接錯誤?",
+        text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allupmenu",
+        icon: "error",
+      });
+    },
+  });
+</script>
