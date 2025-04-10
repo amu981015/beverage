@@ -1,50 +1,62 @@
-# 🧭 Vue CLI 餐飲點餐系統前端專案（分支：vue）
+# 🧾 Vue CLI 餐飲點餐系統（分支：vue）
 
-本分支使用 Vue CLI 建構單頁式前後台點餐系統，前台整合地圖與動態菜單功能，後台則依使用者身分分為三種權限層級，並透過 Vue Router 與元件化設計實現動態頁面切換。本分支專注於前端，後端資料調用來自 [`laravelapi`](https://github.com/你的帳號/你的專案/tree/laravelapi) 分支提供的 API。
-
----
-
-## 🖥️ 前台功能說明
-
-- 專案以 Vue CLI 建構，支援模組化與元件化開發。
-- 使用 Bootstrap + jQuery + Vue 進行樣式與互動設計。
-- **地圖查詢功能：**
-  - 在 `Map` 頁面中整合 `leaflet.markercluster` 呈現分店位置。
-- **動態菜單功能：**
-  - `Menu` 頁面透過 API 獲取後台上架菜單，菜單資料即時更新。
-- Vue Router 控制頁面切換，無需重新載入。
+本分支為 Vue CLI 架構版本，採用元件化開發，透過 Vue Router 實現多頁導覽功能，並結合 Bootstrap、jQuery、地圖模組與後端 API 溝通實作完整點餐平台。
 
 ---
 
-## 🔧 後台功能說明
+## 📌 系統架構說明
 
-- 三種後台角色（透過路由分流並對應元件）：
+### 🖥️ 前台功能
 
-| 路由名稱             | 使用者角色       | 功能說明                                                  |
-|----------------------|------------------|-----------------------------------------------------------|
-| `/admin`             | 一般用戶         | 點餐、查看訂單紀錄                                         |
-| `/storebackground`   | 分店店長         | 檢視本店訂單資料、報表統計                                 |
-| `/background`        | 總公司管理者     | 新增／上下架菜單、新增店長、總覽各分店訂單與報表           |
-
-- 所有後台頁面皆使用 Vue component 元件組裝，畫面切換使用 `<router-view>` 控制。
+- 使用 Vue CLI 建構 SPA（Single Page Application）架構。
+- 透過 `Vue Router` 搭配元件（`component`）動態切換頁面。
+- 頁面總覽：
+  - `map`：整合 `leaflet.markercluster`，讓使用者查詢所有商店據點。
+  - `menu`：依據後台上架／下架資料動態顯示菜單內容。
+  - `admin`：一般用戶後台，可查看訂單明細並進行線上點餐。
+  - `storebackground`：店長後台介面，可查看本分店訂單與報表。
+  - `background`：總公司後台介面，可管理菜單、店長帳號與全店訂單報表。
 
 ---
 
-## 🔗 與後端整合說明
+## 🧩 技術實作細節
 
-- 所有資料皆透過 `laravelapi` 分支中提供的 RESTful API 進行資料交換。
-- 包含登入驗證、菜單查詢、訂單提交、報表統計等。
-- API 呼叫使用 Axios 實作，資料以 JSON 格式交換。
+### 🔁 路由與元件切換
+
+- 以 Vue Router 建構 `/menu`、`/map`、`/admin`、`/storebackground`、`/background` 等路由。
+- 每個路由對應獨立 `.vue` 元件，利於維護與擴展。
+- 透過 `axios` 串接 API 提供資料來源。
+
+---
+
+## 🔗 後端 API 串接
+
+- 本分支前端與後端溝通皆串接 `laravelapi` 分支所建立的 Laravel RESTful API。
+- 所有資料請求皆透過 `axios` 進行呼叫，例如：
+  - 登入 / 註冊驗證
+  - 餐點上架 / 下架查詢
+  - 訂單建立與查詢
+  - 店鋪資料與報表資訊
+
+---
+
+## 🗃️ 資料庫設計
+
+- 資料庫設計遵循 **第三正規化（3NF）** 原則，確保：
+  - 無資料重複與異常
+  - 關聯清晰可維護
+  - 避免更新時發生不一致
 
 ---
 
 ## 🧰 使用技術
 
-| 分類        | 技術 / 工具                                                                 |
-|-------------|------------------------------------------------------------------------------|
-| 🔧 前端      | Vue CLI、Vue Router、Vue 3、JavaScript、Bootstrap、jQuery、Axios、Leaflet.markercluster |
-| 🖥️ 後端 API | Laravel（參考分支：`laravelapi`）                                            |
-| 💾 資料庫    | MySQL（透過後端操作）                                                        |
-| 🛠️ 其他工具 | Git / GitHub、Figma、Node.js、npm                                             |
+| 分類        | 技術 / 工具                                                               |
+|-------------|----------------------------------------------------------------------------|
+| 🔧 前端      | Vue CLI、Vue Router、Bootstrap、jQuery、Leaflet.markercluster、Axios       |
+| 🖥️ 後端     | Laravel（請參考 `laravelapi` 分支）                                        |
+| 💾 資料庫    | MySQL，符合 3NF 正規化設計                                                |
+| 🛠️ 其他工具 | Git / GitHub、Figma、Node.js、npm                                          |
 
 ---
+
