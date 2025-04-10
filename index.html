@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>飲料店官網</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap.css" />
+    <link rel="stylesheet" href="css/all.min.css" />
+    <link rel="stylesheet" href="css/timeline.css" />
+    <link rel="stylesheet" href="css/about.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="css/MarkerCluster.css" />
+    <style>
+      .content {
+        text-align: left;
+      }
+
+      h1,
+      h2 {
+        font-weight: bold;
+      }
+
+      p {
+        margin-bottom: 20px;
+      }
+
+      #project {
+        background-color: #f9f9f9;
+        padding: 60px 0;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .card-text {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .card hr {
+        border-top: 2px solid #ddd;
+        margin-bottom: 15px;
+        width: 40%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          margin-bottom: 20px;
+        }
+      }
+
+      .image-container {
+        position: relative;
+      }
+      .overlay-text {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* 可选：让文字更易读 */
+      }
+      @media screen and (max-width: 768px) {
+        .s05-text,
+        .s08-text,
+        .s13-text {
+          z-index: 10;
+          background-color: rgba(0, 0, 0, 0.2);
+          color: var(--white);
+          margin: 15px;
+          box-shadow: 2px 2px 4px 2px #faf9f9;
+          border-radius: 15px;
+          padding: 15px;
+        }
+      }
+      /* 地圖CSS */
+      .marker-cluster-medium div {
+        background-color: rgba(228, 115, 134, 0.8);
+      }
+      .marker-cluster-small div {
+        background-color: rgb(175, 165, 29);
+      }
+      .marker-cluster div {
+        width: 30px;
+        height: 30px;
+        margin-left: 5px;
+        margin-top: 5px;
+        font-size: 16px;
+        font-weight: 900;
+        text-align: center;
+        border-radius: 50%;
+      }
+      .marker-cluster span {
+        line-height: 30px;
+        color: white;
+      }
+      .line {
+        display: inline-block;
+        width: 100%;
+        text-align: left;
+      }
+
+      .line::before {
+        content: "--------";
+        font-weight: bold;
+      }
+
+      .line span {
+        display: inline-block;
+      }
+
+      @media (max-width: 576px) {
+        .line::before {
+          content: "----";
+        }
+      }
+
+      @media (max-width: 768px) {
+        .line::before {
+          content: "---";
+        }
+      }
+
+      @media (max-width: 992px) {
+        .line::before {
+          content: "--";
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="banner">
+        <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#" @click="loadModule('relly')">
+              <i class="fa-brands fa-envira fa-2x" style="color: green"></i>
+            </a>
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    href="#"
+                    @click="loadModule('relly')"
+                    >首頁</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    href="#"
+                    @click="loadModule('menu')"
+                    >菜單</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="#" @click="loadModule('faq')"
+                    >常見問題</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    href="#"
+                    @click="loadModule('about')"
+                    >關於我們</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link active"
+                    href="#"
+                    @click="loadModule('storemap')"
+                    >門市據點</a
+                  >
+                </li>
+              </ul>
+              <div>
+                <li class="nav-item dropdown d-none" id="s02_background_btn">
+                  <a
+                    style="display: inline"
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span
+                      class="h4"
+                      id="s02_username_text"
+                      style="color: var(--white)"
+                      >XXX</span
+                    >
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        id="background"
+                        href="admin/background.html"
+                        class="dropdown-item d-none"
+                        >總管理後臺</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        id="storebackground"
+                        href="admin/storebackground.html"
+                        class="dropdown-item d-none"
+                        >管理後臺</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        id="order_btn"
+                        href="admin/admin.html"
+                        class="dropdown-item d-none"
+                        >點餐去</a
+                      >
+                    </li>
+                    <li>
+                      <a id="s02_logout_btn" class="dropdown-item">登出</a>
+                    </li>
+                  </ul>
+                </li>
+                <a
+                  class="btn"
+                  href="#"
+                  style="background-color: var(--tropics); color: var(--white)"
+                  @click="loadModule('register')"
+                  id="s02_reg_btn"
+                  >註冊</a
+                >
+                <a
+                  class="btn"
+                  href="#"
+                  style="background-color: var(--endeavor); color: var(--white)"
+                  @click="loadModule('login')"
+                  id="s02_login_btn"
+                  >登入</a
+                >
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="d-flex flex-column min-vh-100">
+        <div id="content" class="flex-grow-1">
+          <div v-if="currentcontent === 'relly'">
+            <div>
+              <div
+                id="carouselExampleCaptions"
+                class="carousel slide wow animate__animated animate__fadeIn"
+                data-wow-duration="1s"
+                data-wow-delay="0.5s"
+                data-wow-iteration="1"
+                data-bs-ride="false"
+              >
+                <div class="carousel-indicators">
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide-to="0"
+                    class="active"
+                    aria-current="true"
+                    aria-label="Slide 1"
+                  ></button>
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide-to="1"
+                    aria-label="Slide 2"
+                  ></button>
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide-to="2"
+                    aria-label="Slide 3"
+                  ></button>
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide-to="3"
+                    aria-label="Slide 4"
+                  ></button>
+                  <button
+                    type="button"
+                    data-bs-target="#carouselExampleCaptions"
+                    data-bs-slide-to="4"
+                    aria-label="Slide 5"
+                  ></button>
+                </div>
+                <div class="carousel-inner">
+                  <div
+                    class="carousel-item bg-cover active"
+                    style="
+                      height: 100vh;
+                      background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    "
+                  >
+                    <div
+                      class="carousel-caption d-md-block p-3 rounded-4 shadow-lg"
+                      style="background-color: rgba(0, 0, 0, 0.2)"
+                    >
+                      <h3 class="fw-900">
+                        經典系列 - "永恆之選" (Timeless Collection)
+                      </h3>
+                      <p class="fs-5" style="color: var(--white)">
+                        "永恆之選"系列是我們品牌的經典之作，融合了傳統瑞士製表工藝與現代設計。每一款手錶都搭載精密的機械機芯，並擁有簡約卻不失高雅的外觀，無論是正式場合還是日常佩戴，都能完美匹配。
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="carousel-item bg-cover"
+                    style="
+                      height: 100vh;
+                      background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    "
+                  >
+                    <div
+                      class="carousel-caption d-md-block p-3 rounded-4 shadow-lg"
+                      style="background-color: rgba(0, 0, 0, 0.2)"
+                    >
+                      <h3 class="fw-900">
+                        運動系列 - "極限挑戰" (Extreme Challenge Collection)
+                      </h3>
+                      <p class="fs-5" style="color: var(--white)">
+                        專為運動愛好者打造，"極限挑戰"系列融合了耐用性和高效能，具備防水、防震和耐高溫的特性。配備精準的計時功能，無論是登山、游泳或其他極限運動，這款手錶都是您最可靠的夥伴。
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="carousel-item bg-cover"
+                    style="
+                      height: 100vh;
+                      background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    "
+                  >
+                    <div
+                      class="carousel-caption d-md-block p-3 rounded-4 shadow-lg"
+                      style="background-color: rgba(0, 0, 0, 0.2)"
+                    >
+                      <h3 class="fw-900">
+                        智能系列 - "未來時光" (Future Time Collection)
+                      </h3>
+                      <p class="fs-5" style="color: var(--white)">
+                        "未來時光"系列是我們的智能手錶系列，結合了先進的技術與時尚設計。具有健康追蹤、藍牙連接、觸控螢幕等多項功能，讓您不僅能精確掌握時間，還能輕鬆管理日常生活與運動健康。
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="carousel-item bg-cover"
+                    style="
+                      height: 100vh;
+                      background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    "
+                  >
+                    <div
+                      class="carousel-caption d-md-block p-3 rounded-4 shadow-lg"
+                      style="background-color: rgba(0, 0, 0, 0.2)"
+                    >
+                      <h3 class="fw-900">
+                        奢華系列 - "極致奢華" (Ultimate Luxury Collection)
+                      </h3>
+                      <p class="fs-5" style="color: var(--white)">
+                        為追求極致奢華的消費者設計，"極致奢華"系列手錶以頂級材料如18K黃金、鉑金及鑽石打造。每一款手錶都是精緻工藝的結晶，擁有超凡的設計和極致的時間準確性，彰顯佩戴者的尊貴身份。
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="carousel-item bg-cover"
+                    style="
+                      height: 100vh;
+                      background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    "
+                  >
+                    <div
+                      class="carousel-caption d-md-block p-3 rounded-4 shadow-lg"
+                      style="background-color: rgba(0, 0, 0, 0.2)"
+                    >
+                      <h3 class="fw-900">
+                        限量系列 - "珍藏時刻" (Collector’s Time Collection)
+                      </h3>
+                      <p class="fs-5" style="color: var(--white)">
+                        "珍藏時刻"系列是我們為真正的手錶愛好者精心打造的限量版手錶。每一款手錶都只有極少數的製作數量，並且每款都擁有獨特的設計和編號，這些限量款手錶將成為您珍藏的瑰寶，並在未來增值。
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="carousel-control-prev"
+                  type="button"
+                  data-bs-target="#carouselExampleCaptions"
+                  data-bs-slide="prev"
+                >
+                  <span
+                    class="carousel-control-prev-icon"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button
+                  class="carousel-control-next"
+                  type="button"
+                  data-bs-target="#carouselExampleCaptions"
+                  data-bs-slide="next"
+                >
+                  <span
+                    class="carousel-control-next-icon"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+
+              <div class="container">
+                <h2 class="text-center m-4">評論</h2>
+                <div class="row text-center align-self-center">
+                  <div class="col-md-4 py-3">
+                    <div
+                      class="card wow animate__animated animate__backInLeft"
+                      data-wow-duration="1s"
+                      data-wow-delay="0s"
+                      data-wow-iteration="1"
+                    >
+                      <h2 class="card-title">John M.</h2>
+                      <hr />
+                      <p class="card-text">
+                        "自從我戴上Vortex
+                        5000手錶，我對手錶的認識徹底改變了！這款手錶的自動時間倒流功能真的很酷，讓我感覺像是在未來。無論是精確度還是設計，它都遠超我的預期。每天戴著它，我都會收到很多讚美，完全值得這個價格！"
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-4 py-3">
+                    <div
+                      class="card wow animate__animated animate__backInUp"
+                      data-wow-duration="1s"
+                      data-wow-delay="0s"
+                      data-wow-iteration="1"
+                    >
+                      <h2 class="card-title">Lisa T.</h2>
+                      <hr />
+                      <p class="card-text">
+                        "Titan
+                        X1手錶的設計真的很吸引人，外觀非常現代，並且搭載了無線充電和自動調整時區的功能，真是太方便了！但有時候它的智能功能連接會稍微延遲，不過總體來說，這款手錶還是很值得擁有，特別是對於喜歡科技感的我來說！"
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-4 py-3">
+                    <div
+                      class="card wow animate__animated animate__backInRight"
+                      data-wow-duration="1s"
+                      data-wow-delay="0s"
+                      data-wow-iteration="1"
+                    >
+                      <h2 class="card-title">Michael K.</h2>
+                      <hr />
+                      <p class="card-text">
+                        "這款SolarWave
+                        1000手錶的太陽能驅動技術挺不錯的，基本上不需要充電，光線就可以保持運行。不過，手錶的設計比我想像的要厚重一些，而且表面稍微有些容易刮花。作為一款日常佩戴的手錶，還算是可以，但如果你追求極致輕薄與奢華，可能會有些失望。"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-cover carousel"
+                style="
+                  background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                  height: 100vh;
+                "
+              >
+                <div
+                  class="carousel-caption d-none d-md-block p-3 rounded-4 shadow-lg"
+                  style="background-color: rgba(0, 0, 0, 0.2)"
+                >
+                  <h3 class="fw-900">探索精緻時光</h3>
+                  <p class="fs-5" style="color: var(--white)">
+                    每一分每一秒，都是無價的瞬間。這款手錶以精湛工藝與現代設計，為你帶來精準與優雅。無論是日常佩戴還是特殊場合，它都是你時間的最佳見證。掌握時間，掌控生活。
+                  </p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div
+                  class="col-md-6 bg-cover"
+                  style="
+                    background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    height: 50vh;
+                  "
+                ></div>
+                <div
+                  class="col-md-6 bg-cover d-flex align-items-center"
+                  style="background-color: yellowgreen"
+                >
+                  <div class="content text-white m-5">
+                    <h1>OUR STORES</h1>
+                    <h2>門市據點</h2>
+                    <p>一杯飲料，滿足一整天！</p>
+                    <p>
+                      不論是清晨的提神還是午後的放鬆，我們的飲料陪伴你度過每一個忙碌的時刻。
+                    </p>
+                    <a
+                      id="map_btn"
+                      href="#"
+                      class="btn btn-primary"
+                      @click="loadModule('storemap')"
+                      >READ MORE</a
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div
+                  class="col-md-7 bg-cover d-flex align-items-center"
+                  style="background-color: yellowgreen"
+                >
+                  <div class="content text-white m-5">
+                    <h1>about us</h1>
+                    <h2>關於我們</h2>
+
+                    <div class="h5">
+                      <p>每一杯飲料，都是一段故事的開始。</p>
+                      <p>
+                        我們相信每一口都承載著生活的美好與溫暖，並帶給您與眾不同的感動。
+                      </p>
+                      <p>
+                        「心飲」一直致力於創新與品質的平衡，每季都會推出全新口味。<br />我們珍視每一位顧客的支持與回饋，將每一份鼓勵化為前進的力量，<br />並以虛心接受每一條建議，努力改進不完美的地方，<br />我們的承諾是：每一杯飲品都以最真誠的心準備，為您呈現最美好的味覺體驗。<br />
+                      </p>
+                    </div>
+
+                    <a
+                      id="about_btn"
+                      href="#"
+                      class="btn btn-primary"
+                      @click="loadModule('about')"
+                      >READ MORE</a
+                    >
+                  </div>
+                </div>
+                <div
+                  class="col-md-5 bg-cover"
+                  style="
+                    background-image: url('https://fakeimg.pl/1920x1080/555?text=?????');
+                    height: 75vh;
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'menu'">
+            <div class="container">
+              <div class="row m-3" id="menu-container">
+                <div class="col-12 text-center" v-if="menu.length === 0">
+                  <p class="h4">正在加載菜單...</p>
+                </div>
+
+                <template v-else>
+                  <div
+                    class="col-md-6 col-lg-4 mb-4"
+                    v-for="(items, category) in menuCategories"
+                    :key="category"
+                  >
+                    <div>
+                      <div class="h3">{{ category }}</div>
+                      <div>
+                        <ul>
+                          <li class="row" v-for="item in items" :key="item.id">
+                            <div class="h4">
+                              {{ item.name }}<span class="">
+                                {{ item.price }}
+                              </span>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'faq'">
+            <div class="container">
+              <h2 class="text-center m-4">常見問題</h2>
+              <div class="accordion" id="accordionExample">
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInLeft"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="heading01">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse01"
+                      aria-expanded="true"
+                      aria-controls="collapse01"
+                    >
+                      1. 如何保養我的手錶？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse01"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="heading01"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      保持清潔：定期用柔軟的布清潔手錶，尤其是表盤和表帶部分。對於金屬表帶，可以使用微濕的布擦拭，以去除污漬和汗水。<br />
+                      防水保護：即使手錶具備防水功能，也應避免長時間浸泡在水中，尤其是熱水中。維護好防水性能，定期檢查防水密封。<br />
+                      避免劇烈衝擊：手錶不應遭受劇烈的撞擊或震動，這樣有助於保護機芯和表殼。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInRight"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="heading02">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse02"
+                      aria-expanded="false"
+                      aria-controls="collapse02"
+                    >
+                      2. 手錶應該如何存放？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse02"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="heading02"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      避免陽光直射：長時間暴露在強烈陽光下會損壞手錶的機芯和表帶，特別是皮革表帶容易變形。<br />
+                      避免極端溫度：極高或極低的溫度會影響手錶的運行，尤其是機械手錶的精度。<br />
+                      使用錶盒：將手錶存放在專用的錶盒內，有助於防止灰塵、刮傷和其他外部損傷。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInLeft"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse03"
+                      aria-expanded="false"
+                      aria-controls="collapse03"
+                    >
+                      3. 如何延長手錶的電池壽命？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse03"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      關閉不必要的功能：如果是智能手錶，關閉不常使用的功能（如GPS或藍牙）可以延長電池壽命。<br />
+                      定期充電：避免將手錶的電池完全耗盡，保持在20%-80%之間的電量有助於延長電池的使用壽命。<br />
+                      使用節能模式：許多智能手錶提供節能模式，適合長時間使用而不需要頻繁充電。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInRight"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse04"
+                      aria-expanded="false"
+                      aria-controls="collapse04"
+                    >
+                      4. 手錶的機械運行需要維護嗎？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse04"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      定期檢查機芯：機械手錶需要定期保養，尤其是超過3-5年後，應將其送到專業維修點進行清潔、潤滑和檢查。<br />
+                      避免長期靜止：如果長時間不佩戴機械手錶，應使用手錶上鏈器或定期上鏈，以保持機芯的運行。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInLeft"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse05"
+                      aria-expanded="false"
+                      aria-controls="collapse05"
+                    >
+                      5. 如何處理手錶的水損問題？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse05"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      立即停止使用：如果手錶進水，應立即停止使用，並將其送往專業維修中心進行檢查與修理。<br />
+                      檢查防水密封：定期檢查手錶的防水密封，尤其是在手錶保固期結束後。防水性能會隨著時間和使用環境逐漸減弱。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInRight"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse06"
+                      aria-expanded="false"
+                      aria-controls="collapse06"
+                    >
+                      6. 我的手錶是否有保固？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse06"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      保固範圍：大多數手錶品牌提供2年至5年的保固期，涵蓋了製造上的缺陷和材料問題。機械或智能功能不正常，通常可在保固期內免費維修或更換。<br />
+                      保固不涵蓋：一般來說，手錶的外觀損傷、意外摔落、過度磨損、外部液體損壞和非授權維修會導致保固失效。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInLeft"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse07"
+                      aria-expanded="false"
+                      aria-controls="collapse07"
+                    >
+                      7. 如何處理手錶的維修問題？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse07"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      聯繫授權維修點：如果手錶需要維修，請將手錶送至品牌授權的維修中心進行專業檢查和維修。<br />
+                      避免自行修理：為了保護您的手錶並保持保固，請避免自行拆解或修理。非專業維修可能會導致進一步損壞。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInRight"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse08"
+                      aria-expanded="false"
+                      aria-controls="collapse08"
+                    >
+                      8. 手錶的保固期可以延長嗎？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse08"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      延長保固：某些品牌提供額外的保固延長服務，通常需要額外付費購買延長保固方案。詳細信息可以詢問品牌客服或零售商。<br />
+                      註冊產品：購買手錶後，請務必註冊產品以確保能享受品牌提供的所有保固服務和優惠。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInLeft"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse09"
+                      aria-expanded="false"
+                      aria-controls="collapse09"
+                    >
+                      9. 如何保養手錶的皮革表帶？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse09"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      避免潮濕：皮革表帶不宜長時間接觸水或汗水，這會影響皮革的質感和耐用性。<br />
+                      定期保養：使用專門的皮革護理油輕輕擦拭表帶，保持其柔軟和光澤。避免暴露在陽光下，避免乾裂。<br />
+                      更換表帶：隨著使用時間的推移，皮革表帶可能會磨損或變形。建議定期檢查並更換表帶，以保持手錶的最佳狀態。
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="accordion-item wow animate__animated animate__fadeInRight"
+                  data-wow-duration="1s"
+                  data-wow-delay="0s"
+                  data-wow-iteration="1"
+                >
+                  <h2 class="accordion-header" id="headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#collapse10"
+                      aria-expanded="false"
+                      aria-controls="collapse10"
+                    >
+                      10. 智能手錶的操作系統更新如何處理？
+                    </button>
+                  </h2>
+                  <div
+                    id="collapse10"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                  >
+                    <div class="accordion-body">
+                      定期更新：智能手錶應該定期檢查並更新操作系統，這樣可以確保功能正常並享有最新的安全性和性能優化。<br />
+                      自動更新：許多智能手錶支持自動更新，確保您的設備始終運行最新版本的系統和應用程式。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'about'">
+            <div class="container">
+              <div data-scroll-watch="" class="fade_in esontea">
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/150x150/555?text=?????" />
+                  <p class="subtitle">
+                    層層山巒，由山入世，反璞歸真，<br />把自然的山頭氣匯聚成禮。<br />用好茶洗滌一切世俗人間的塵埃與煩惱。
+                  </p>
+                </section>
+              </div>
+              <div data-scroll-watch="" class="fade_in content_title">
+                <h2 class="main_title">關於</h2>
+                <div class="subtitle">
+                  茶的收藏家，在xx都可以找到你想要的好茶！
+                </div>
+              </div>
+              <div class="idea">
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/72x72/555?text=?????" />
+                  <h3 class="main_title">品質穩定</h3>
+                  <p class="subtitle">與經驗豐富的茶師傅合作</p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/72x72/555?text=?????" />
+                  <h3 class="main_title">茶種多元</h3>
+                  <p class="subtitle">大禹嶺茶/烏龍茶/紅茶/綠茶</p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/72x72/555?text=?????" />
+                  <h3 class="main_title">親自把關</h3>
+                  <p class="subtitle">自己敢喝的茶才敢賣</p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/72x72/555?text=?????" />
+                  <h3 class="main_title">無農藥殘留</h3>
+                  <p class="subtitle">通過TTB台茶檢驗</p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/72x72/555?text=?????" />
+                  <h3 class="main_title">第一手茶葉</h3>
+                  <p class="subtitle">身兼茶農與茶商</p>
+                </section>
+              </div>
+              <div data-scroll-watch="" class="fade_in content_title">
+                <h2 class="main_title">優勢</h2>
+                <div class="subtitle">給您最優良、珍貴、不混茶的茶品</div>
+              </div>
+              <div class="strength">
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/200x220/555?text=?????" />
+                  <h3 class="main_title">找好茶葉交給找茶專家</h3>
+                  <p class="subtitle">
+                    xx在茶葉界的人脈非常廣闊，熟知不同茶區、茶農、茶商、茶師傅、茶葉包裝行等等，價格相對較優惠。要尋找好茶葉，交給xx就對了！
+                  </p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/200x220/555?text=?????" />
+                  <h3 class="main_title">老師傅把關品質優</h3>
+                  <p class="subtitle">
+                    在茶葉選購時，品質價格，絕對是我們考慮的因素之一。與老師傅長期合作，在外也有許多合作的茶師傅。讓我們在挑選茶葉時，能夠有不同的選擇。
+                  </p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/200x220/555?text=?????" />
+                  <h3 class="main_title">主打大禹嶺高山茶</h3>
+                  <p class="subtitle">
+                    熟悉茶葉的行家，都知道大禹嶺茶以及其他高山茶類產量非常少。xx主打大禹嶺茶，供應量大，提供顧客安全的選擇。
+                  </p>
+                </section>
+                <section data-scroll-watch="" class="fade_in">
+                  <img src="https://fakeimg.pl/200x220/555?text=?????" />
+                  <h3 class="main_title">純正台灣味不混茶</h3>
+                  <p class="subtitle">
+                    主打純正的台灣品牌茶，不參任何添加物、不混茶，並藉由買賣的過程，教育消費者關於茶葉的知識，並透過品牌識別，朝向國際品牌的方向邁進！
+                  </p>
+                </section>
+              </div>
+              <div data-scroll-watch="" class="fade_in content_title">
+                <h2 class="main_title">xx世紀</h2>
+                <div class="subtitle">一路秉持最好品質，帶給您最好的茶品</div>
+              </div>
+              <div data-scroll-watch="" class="fade_in eson_timeline">
+                <div class="col-md-12">
+                  <div class="main-timeline">
+                    <div class="timeline">
+                      <div class="timeline-icon"></div>
+                      <div class="timeline-content">
+                        <h2 class="title">2018</h2>
+                        <p class="description">
+                          熟悉茶葉的行家，都知道大禹嶺茶以及其他高山茶類產量非常少。xx主打大禹嶺茶，供應量大，提供顧客安全的選擇。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="timeline">
+                      <div class="timeline-icon"></div>
+                      <div class="timeline-content right">
+                        <h2 class="title">2017</h2>
+                        <p class="description">
+                          行銷全球計劃，準備朝向國際品牌的方向邁進！
+                        </p>
+                      </div>
+                    </div>
+                    <div class="timeline">
+                      <div class="timeline-icon"></div>
+                      <div class="timeline-content">
+                        <h2 class="title">2016</h2>
+                        <p class="description">
+                          xx成立，以原葉立體茶包為出發。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'storemap'">
+            <div class="container-fluid">
+              <div class="row vh-100">
+                <div class="col-md-4">
+                  <select
+                    name="mycity"
+                    id="mycity"
+                    class="form-select form-select-lg mt-4"
+                    v-model="mycity"
+                  >
+                    <option value="" selected disabled>
+                      ---選擇縣市名稱---
+                    </option>
+                    <option
+                      v-for="(item, index) in city"
+                      :key="index"
+                      :value="item.city"
+                    >
+                      {{item.city}}
+                    </option>
+                  </select>
+                  <select
+                    name="myarea"
+                    id="myarea"
+                    class="form-select form-select-lg mt-3"
+                    v-model="myarea"
+                  >
+                    <option value="" selected disabled>
+                      ---選擇鄉鎮區名稱---
+                    </option>
+                    <option
+                      v-for="(item, index) in area"
+                      :key="index"
+                      :value="item.area"
+                    >
+                      {{item.area}}
+                    </option>
+                  </select>
+                  <ul
+                    class="list-group mt-3"
+                    id="mylist"
+                    style="height: 80vh; overflow: scroll"
+                  >
+                    <li
+                      v-for="(item, index) in store"
+                      :key="index"
+                      class="list-group-item"
+                      @click="openMarkerPopup(item.latitude, item.longitude)"
+                      :data-lat="item.latitude"
+                      :data-lng="item.longitude"
+                    >
+                      <div class="row d-flex">
+                        <div class="col-md-4 text-center">
+                          <img
+                            :src="item.photo || 'https://fakeimg.pl/200x220/555?text=?????'"
+                            class="img-thumbnail"
+                            style="max-height: 125px"
+                            alt=""
+                          />
+                        </div>
+                        <div class="col-md-8">
+                          <p class="h3 fw-900 text-danger">{{item.name}}</p>
+                          <p class="h5 fw-900">地址:{{item.address}}</p>
+                          <p class="h5 fw-900">電話:{{item.tel}}</p>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-8">
+                  <div id="map" class="vh-100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'register'">
+            <div class="container mt-5">
+              <h1 class="text-center">會員註冊</h1>
+
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="d-flex flex-column h-100">
+                    <div class="display-6 fw-900 my-3">會員守則</div>
+                    <p>
+                      1.會員資格：僅限年滿18歲的個人可註冊為會員，並需提供真實、準確的個人資料，確保帳戶安全。
+                    </p>
+                    <p>
+                      2.帳戶安全：會員應妥善保管自己的帳號和密碼，對帳號下的所有活動負責。若發現任何異常或未經授權的使用，應立即通知我們。
+                    </p>
+                    <p>
+                      3.訂單與付款：會員需按照網站提供的流程進行訂單確認與付款，並確保支付資訊的正確性及有效性。
+                    </p>
+                    <p>
+                      4.產品資訊：網站提供的產品資訊均以最真實的資料為準，但由於顯示設備差異，實際商品顏色、尺寸及規格可能與圖片有所不同，敬請理解。
+                    </p>
+                    <p>
+                      5.退換貨政策：會員如需退換貨，需遵循網站的退換貨政策，並提供有效的購買證明，具體條件請參閱我們的退換貨規定。
+                    </p>
+                    <p>
+                      6.隱私保護：我們將對會員的個人資料進行保密，並僅用於提供服務或促銷活動。詳情可參見我們的隱私政策。
+                    </p>
+                    <p>
+                      7.網站使用：會員應遵守本網站的使用條款，不得發布任何不當、非法或有害的內容。違規行為將導致帳號暫停或取消。
+                    </p>
+
+                    <div class="form-check form-switch mt-auto">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="chk01_reg"
+                        name="chk01_reg"
+                        v-model="chk01"
+                        :class="{ ' is-valid' : chk01 , ' is-invalid' : !chk01}"
+                      />
+
+                      <div class="valid-feedback">已同意始能註冊!</div>
+                      <div class="invalid-feedback">須同意始能註冊!</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="mb-3">
+                    <label for="username_reg" class="form-label">帳號</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username_reg"
+                      name="username_reg"
+                      v-model="username"
+                      :class="{ ' is-valid' : flag_username_reg , ' is-invalid' : !flag_username_reg}"
+                    />
+                    <div class="valid-feedback">符合規則</div>
+                    <div class="invalid-feedback">{{flag_username_value}}</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="password_reg" class="form-label">密碼</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password_reg"
+                      name="password_reg"
+                      v-model="password"
+                      :class="{ ' is-valid' : flag_password_reg , ' is-invalid' : !flag_password_reg}"
+                      placeholder="字數3~6"
+                    />
+                    <div class="valid-feedback">符合規則</div>
+                    <div class="invalid-feedback">
+                      <p>至少 8 個字符</p>
+                      <p>
+                        包含大寫字母、小寫字母、數字和特殊字符（例如 !@#$%^&*
+                        等）
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="re_password_reg" class="form-label"
+                      >確認密碼</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="re_password_reg"
+                      name="re_password_reg"
+                      v-model="re_password"
+                      :class="{ ' is-valid' : flag_re_password_reg , ' is-invalid' : !flag_re_password_reg}"
+                    />
+                    <div class="valid-feedback">符合規則</div>
+                    <div class="invalid-feedback">不符合規則</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="email_reg" class="form-label">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email_reg"
+                      name="email_reg"
+                      v-model="email"
+                      :class="{ ' is-valid' : flag_email_reg , ' is-invalid' : !flag_email_reg}"
+                      placeholder="字數3~20"
+                    />
+                    <div class="valid-feedback">符合規則</div>
+                    <div class="invalid-feedback">不符合規則</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  @click="reg_btn()"
+                >
+                  註冊
+                </button>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'login'">
+            <div class="container mt-5">
+              <h1 class="text-center">會員登入</h1>
+              <div class="mb-3">
+                <label for="username_login" class="form-label">帳號</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username_login"
+                  name="username_login"
+                  v-model="loginUsername"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password_login" class="form-label">密碼</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password_login"
+                  name="password_login"
+                  v-model="loginPassword"
+                />
+              </div>
+
+              <div class="text-center">
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="login_btn"
+                  @click="loginbtn()"
+                >
+                  登入
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer>
+          <section id="s9" style="background-color: green">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-2 col-12 d-inline mt-3 mb-3">
+                  <div
+                    style="
+                      background-image: url(img/phone-booth-203492_1920.jpg);
+                      height: 100px;
+                      width: 200px;
+                    "
+                    class="bg-cover"
+                  ></div>
+                </div>
+                <div class="col-md-8 col-12">
+                  <div class="row d-inline">
+                    <div
+                      class="col-12 mb-3 d-flex justify-content-center align-items-center"
+                    >
+                      <ul class="nav">
+                        <li class="nav-item pe-3">
+                          <a class="nav-link text-white" href="#">XXX</a>
+                        </li>
+                        <li class="nav-item pe-3">
+                          <a class="nav-link text-white" href="#">XXX</a>
+                        </li>
+                        <li class="nav-item pe-3">
+                          <a class="nav-link text-white" href="#">XXX</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="col-12 text-center">
+                      <a class="nav-link disabled text-white">PowerBy 飲料店</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-2 text-end mt-4">
+                  <h3 class="text-center text-white">追蹤我們</h3>
+                  <div class="row">
+                    <div
+                      class="col-3 wow animate__animated animate__fadeInTopLeft"
+                      data-wow-duration="1s"
+                      data-wow-delay="0.5s"
+                      data-wow-iteration="1"
+                    >
+                      <a href="#" target="_blank" title="Instagram"
+                        ><i
+                          class="fa-brands fa-instagram fa-2x"
+                          style="color: rgb(255, 104, 149)"
+                        ></i
+                      ></a>
+                    </div>
+                    <div
+                      class="col-3 wow animate__animated animate__fadeInBottomLeft"
+                      data-wow-duration="1s"
+                      data-wow-delay="1s"
+                      data-wow-iteration="1"
+                    >
+                      <a href="#" target="_blank" title="Facebook"
+                        ><i
+                          class="fa-brands fa-square-facebook fa-2x"
+                          style="color: var(--endeavor)"
+                        ></i
+                      ></a>
+                    </div>
+                    <div
+                      class="col-3 wow animate__animated animate__fadeInTopLeft"
+                      data-wow-duration="1s"
+                      data-wow-delay="1.5s"
+                      data-wow-iteration="1"
+                    >
+                      <a href="#" target="_blank" title="Twitter"
+                        ><i
+                          class="fa-brands fa-square-x-twitter fa-2x"
+                          style="color: var(--black)"
+                        ></i
+                      ></a>
+                    </div>
+                    <div
+                      class="col-3 wow animate__animated animate__fadeInBottomLeft"
+                      data-wow-duration="1s"
+                      data-wow-delay="2s"
+                      data-wow-iteration="1"
+                    >
+                      <a href="#" target="_blank" title="youtube"
+                        ><i class="fa-brands fa-youtube text-danger fa-2x"></i
+                      ></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </footer>
+      </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/counterup2@2.0.2/dist/index.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="js/leaflet.markercluster.js"></script>
+    <script src="js/leaflet-color-markers.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script>
+      const App = {
+        data() {
+          return {
+            currentcontent: "relly",
+            user: [],
+            menu: [],
+            menuCategories: {},
+            loginUsername: "",
+            loginPassword: "",
+            username: "",
+            password: "",
+            re_password: "",
+            email: "",
+            chk01: false,
+            flag_username_reg: false,
+            flag_username_value: "請輸入",
+            flag_password_reg: false,
+            flag_re_password_reg: false,
+            flag_email_reg: false,
+            city: "",
+            area: "",
+            mycity: "",
+            myarea: "",
+            store: [],
+            map: "",
+            markers: "",
+            markerMap: {},
+          };
+        },
+        created() {
+          const vm = this;
+          new WOW().init();
+
+          $(function () {
+            if (vm.getCookie("Uid01")) {
+              var JSONdata = {};
+              JSONdata["uid01"] = vm.getCookie("Uid01");
+              $.ajax({
+                type: "POST",
+                url: "member_control_api_v1.php?action=checkuid",
+                data: JSON.stringify(JSONdata),
+                dataType: "json",
+                success: showdata_checkuid,
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "member_control_api_v1.php?action=checkuid",
+                    icon: "error",
+                  });
+                },
+              });
+            }
+            $("#s02_logout_btn").click(function () {
+              vm.setCookie("Uid01", ",7");
+              location.href = "index.html";
+            });
+
+            $.ajax({
+              type: "GET",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectcity",
+              dataType: "json",
+              async: false,
+              success: function (data) {
+                vm.city = data.data;
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectcity",
+                  icon: "error",
+                });
+              },
+            });
+          });
+          function showdata_checkuid(data) {
+            this.user = data.data;
+            console.log(data);
+            if (data.state) {
+              if (data.data.vip_level == 1000) {
+                $("#s02_reg_btn").hide();
+                $("#s02_login_btn").hide();
+                $("#s02_username_text").text(data.data.username);
+                $("#s02_logout_btn").removeClass("d-none");
+                $("#s02_background_btn").removeClass("d-none");
+                $("#background").removeClass("d-none");
+              } else if (data.data.vip_level == 100) {
+                $("#s02_reg_btn").hide();
+                $("#s02_login_btn").hide();
+                $("#s02_username_text").text(data.data.username);
+                $("#s02_logout_btn").removeClass("d-none");
+                $("#s02_background_btn").removeClass("d-none");
+                $("#storebackground").removeClass("d-none");
+              } else {
+                $("#s02_reg_btn").hide();
+                $("#s02_login_btn").hide();
+                $("#s02_username_text").text(data.data.username);
+                $("#s02_logout_btn").removeClass("d-none");
+                $("#s02_background_btn").removeClass("d-none");
+                $("#order_btn").removeClass("d-none");
+              }
+            }
+          }
+        },
+        watch: {
+          username(newValue) {
+            const vm = this;
+            if (newValue.length > 2 && newValue.length < 8) {
+              var JSONdata = {};
+              JSONdata["username"] = newValue;
+              $.ajax({
+                type: "POST",
+                url: "member_control_api_v1.php?action=checkuni",
+                dataType: "json",
+                data: JSON.stringify(JSONdata),
+                success: function (data) {
+                  if (data.state) {
+                    vm.flag_username_value = data.message;
+                    vm.flag_username_reg = true;
+                  } else {
+                    vm.flag_username_value = data.message;
+                    vm.flag_username_reg = false;
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "member_control_api_v1.php?action=checkuni",
+                    icon: "error",
+                  });
+                },
+              });
+            } else {
+              vm.flag_username_value = "不符合規則";
+              vm.flag_username_reg = false;
+            }
+          },
+          password(newValue) {
+            const vm = this;
+            vm.flag_re_password_reg = false;
+            const rules =
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (rules.test(newValue)) {
+              vm.flag_password_reg = true;
+            } else {
+              vm.flag_password_reg = false;
+            }
+          },
+          re_password(newValue) {
+            const vm = this;
+            if (vm.flag_password_reg && newValue === vm.password) {
+              vm.flag_re_password_reg = true;
+            } else {
+              vm.flag_re_password_reg = false;
+            }
+          },
+          email(newValue) {
+            const vm = this;
+            const rules = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (rules.test(newValue)) {
+              vm.flag_email_reg = true;
+            } else {
+              vm.flag_email_reg = false;
+            }
+          },
+          mycity(newValue) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["city"] = newValue;
+            $.ajax({
+              type: "POST",
+              url: "member_control_api_v1.php?action=selectarea",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                if (data.state) {
+                  vm.area = data.data;
+                } else {
+                  Swal.fire({
+                    title: data.message,
+                    text: "member_control_api_v1.php?action=selectarea",
+                    icon: "error",
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "member_control_api_v1.php?action=selectarea",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          myarea(newValue) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["city"] = vm.mycity;
+            JSONdata["area"] = newValue;
+            $.ajax({
+              type: "POST",
+              url: "member_control_api_v1.php?action=selectstore",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                if (data.state) {
+                  vm.store = data.data;
+                  vm.removeMarker();
+                  let counter = 0;
+                  vm.store.forEach(function (item) {
+                    counter++;
+                    if (counter === 1) {
+                      vm.map.panTo([item.latitude, item.longitude]);
+                    }
+                    const img =
+                      item.photo ||
+                      "https://fakeimg.pl/958x485/BB0?text=working...";
+                    const popupHTML = `
+                <div class="card" style="width: 18rem;">
+                  <img src="${img}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">${item.name}</h5>
+                    <p class="card-text h5 fw-900">地址:${item.address}</p>
+                    <p class="card-text h5 fw-900">電話:${item.tel}</p>
+                  </div>
+                </div>
+              `;
+                    const marker = L.marker([
+                      item.latitude,
+                      item.longitude,
+                    ]).bindPopup(popupHTML);
+                    vm.markers.addLayer(marker);
+                    vm.markerMap[`${item.latitude},${item.longitude}`] = marker;
+                  });
+                } else {
+                  Swal.fire({
+                    title: data.message,
+                    text: "member_control_api_v1.php?action=selectstore",
+                    icon: "error",
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "member_control_api_v1.php?action=selectstoreموع",
+                  icon: "error",
+                });
+              },
+            });
+          },
+        },
+        methods: {
+          loadModule(module) {
+            const vm = this;
+            vm.currentcontent = module;
+            if (vm.currentcontent === "menu") {
+              vm.getmenu();
+            }
+            if (vm.currentcontent === "storemap") {
+              $(function () {
+                vm.map = L.map("map").setView([24.171642, 120.609483], 13);
+                L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                  attribution:
+                    '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                }).addTo(vm.map);
+                vm.markers = new L.markerClusterGroup().addTo(vm.map);
+              });
+            }
+          },
+          getmenu() {
+            const vm = this;
+            $.ajax({
+              type: "GET",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allupmenu",
+              dataType: "json",
+              async: false,
+              success: function (data) {
+                if (data && data.data) {
+                  vm.menu = data.data;
+                  var categories = {};
+
+                  vm.menu.forEach(function (item) {
+                    if (!categories[item.category]) {
+                      categories[item.category] = [];
+                    }
+                    categories[item.category].push(item);
+                  });
+
+                  vm.menuCategories = categories;
+
+                  vm.$nextTick(function () {
+                    vm.updateMenuDisplay();
+                  });
+                } else {
+                  console.error("API返回的數據格式不正確或為空");
+                }
+              },
+              error: function (err) {
+                console.error("API請求錯誤:", err);
+                Swal.fire({
+                  title: "API介接錯誤",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allupmenu",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          reg_btn() {
+            const vm = this;
+            if (
+              vm.flag_username_reg &&
+              vm.flag_password_reg &&
+              vm.flag_re_password_reg &&
+              vm.flag_email_reg &&
+              vm.chk01
+            ) {
+              var JOSNdata = {};
+              JOSNdata["username"] = vm.username;
+              JOSNdata["password"] = vm.password;
+              JOSNdata["email"] = vm.email;
+
+              $.ajax({
+                type: "POST",
+                url: "member_control_api_v1.php?action=register",
+                data: JSON.stringify(JOSNdata),
+                dataType: "json",
+                success: function (data) {
+                  if (data.state) {
+                    Swal.fire({
+                      title: data.message,
+                      icon: "success",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        vm.setCookie("Uid01", data.data.Uid01, 7);
+                        location.href = "index.html";
+                      }
+                    });
+                  } else {
+                    Swal.fire({
+                      title: data.message,
+                      icon: "error",
+                    });
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "member_control_api_v1.php?action=register",
+                    icon: "error",
+                  });
+                },
+              });
+            } else {
+              Swal.fire({
+                title: "欄位有錯誤, 請修正?",
+                icon: "warning",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "確認",
+              });
+            }
+          },
+          loginbtn() {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["username"] = vm.loginUsername;
+            JSONdata["password"] = vm.loginPassword;
+            console.log(JSON.stringify(JSONdata));
+            $.ajax({
+              type: "POST",
+              url: "member_control_api_v1.php?action=login",
+              data: JSON.stringify(JSONdata),
+              dataType: "json",
+              success: function (data) {
+                if (data.state) {
+                  Swal.fire({
+                    title: data.message,
+                    allowOutsideClick: false,
+                    icon: "success",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      $("#loginModal").modal("hide");
+                      $("#s02_reg_btn").hide();
+                      $("#s02_login_btn").hide();
+                      $("#s02_welcome_user").removeClass("d-none");
+                      $("#s02_username_text").text(data.data.username);
+                      $("#s02_logout_btn").removeClass("d-none");
+                      $("#s02_background_btn").removeClass("d-none");
+                      vm.setCookie("Uid01", data.data.Uid01, 7);
+                      location.href = "index.html";
+                    }
+                  });
+                } else {
+                  Swal.fire({
+                    title: data.message,
+                    icon: "error",
+                  });
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "member_control_api_v1.php?action=login",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          openMarkerPopup(lat, lng) {
+            const vm = this;
+            const key = `${lat},${lng}`;
+            const marker = vm.markerMap[key];
+            if (marker) {
+              marker.openPopup();
+              vm.map.panTo([lat, lng]);
+            } else {
+              console.warn(`未找到經緯度為 ${key} 的標記`);
+            }
+          },
+          removeMarker() {
+            const vm = this;
+            vm.markers.clearLayers();
+            vm.markerMap = {};
+          },
+          setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+          },
+          getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(";");
+            for (let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == " ") {
+                c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+              }
+            }
+            return "";
+          },
+        },
+        computed: {},
+      };
+      Vue.createApp(App).mount("#app");
+    </script>
+  </body>
+</html>

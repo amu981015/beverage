@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>點餐系統</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/all.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/datatables.net-dt@1.11.5/css/jquery.dataTables.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="banner">
+        <div class="">
+          <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="background.html">
+                <i class="fa-brands fa-envira fa-2x" style="color: green"></i>
+              </a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-menu')"
+                      >菜單管理</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-admin')"
+                      >店長管理</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-order')"
+                      >訂單管理</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-chart')"
+                      >報表</a
+                    >
+                  </li>
+                </ul>
+                <div>
+                  <li class="dropdown d-none" id="s02_background_btn">
+                    <a
+                      style="display: inline"
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <span
+                        class="h4 text-center"
+                        id="s02_username_text"
+                        style="color: var(--white)"
+                        >XXX</span
+                      >
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a class="dropdown-item" href="../index.html">回首頁</a>
+                      </li>
+                      <li>
+                        <a id="logout_btn" class="dropdown-item">登出</a>
+                      </li>
+                    </ul>
+                  </li>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column min-vh-100">
+        <div id="content" class="flex-grow-1">
+          <div v-if="currentcontent === 'bg-menu'">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="container">
+                    <div class="card mt-3">
+                      <div class="card-header bg-info h3">
+                        菜單管理
+                        <div class="float-end">
+                          <button
+                            class="btn btn-success me-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#createModal"
+                          >
+                            新增菜單
+                          </button>
+                          <button
+                            class="btn btn-warning me-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editModal"
+                          >
+                            修改菜單
+                          </button>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <data-table
+                          :data="menu"
+                          :columns="columns"
+                        ></data-table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="createModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header text-bg-warning fw-900">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        新增菜單
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="createModal_name" class="form-label"
+                          >飲料名稱(8字以內)</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="createModal_name"
+                          name="createModal_name"
+                          v-model="menuName"
+                          :class="{ ' is-valid' : createMenuNameCheck , ' is-invalid' : !createMenuNameCheck}"
+                        />
+                        <div class="valid-feedback">
+                          {{ createMenuNameValue }}
+                        </div>
+                        <div class="invalid-feedback">
+                          {{ createMenuNameValue }}
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createModal_price" class="form-label"
+                          >價格(低於200)</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="createModal_price"
+                          name="createModal_price"
+                          v-model="menuPrice"
+                          :class="{ ' is-valid' : createMenuPriceCheck , ' is-invalid' : !createMenuPriceCheck}"
+                        />
+                        <div class="valid-feedback">符合規定</div>
+                        <div class="invalid-feedback">標價錯誤</div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createModal_category" class="form-label"
+                          >類別</label
+                        >
+                        <select
+                          class="form-select"
+                          id="createModal_category"
+                          name="createModal_category"
+                          v-model="menuCategory"
+                          :class="{ ' is-valid' : createMenuCategoryCheck , ' is-invalid' : !createMenuCategoryCheck}"
+                        >
+                          <option disabled value="">請選擇類別</option>
+                          <option
+                            v-for="item in uniqueCategories"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </option>
+                          <option value="其他">其他</option>
+                        </select>
+                        <div class="valid-feedback">符合規定</div>
+                        <div class="invalid-feedback">請選擇類別</div>
+
+                        <div v-if="menuCategory === '其他'" class="mt-3">
+                          <label for="customCategory" class="form-label"
+                            >請輸入自定義類別(5字以內)</label
+                          >
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="customCategory"
+                            name="customCategory"
+                            v-model="createCustomCategory"
+                            placeholder="輸入類別名稱"
+                            :class="{ ' is-valid' : createMenuCustomCategoryCheck , ' is-invalid' : !createMenuCustomCategoryCheck}"
+                          />
+                          <div class="valid-feedback">符合規定</div>
+                          <div class="invalid-feedback">字數錯誤</div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createModal_status" class="form-label"
+                          >狀態</label
+                        >
+                        <select
+                          class="form-select"
+                          id="createModal_status"
+                          name="createModal_status"
+                          v-model="menuStatus"
+                          :class="{ ' is-valid' : createMenuStatusCheck , ' is-invalid' : !createMenuStatusCheck}"
+                        >
+                          <option disabled value="">請選擇狀態</option>
+                          <option value="上架">上架</option>
+                          <option value="下架">下架</option>
+                        </select>
+                        <div class="valid-feedback">符合規定</div>
+                        <div class="invalid-feedback">請選擇狀態</div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        取消
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-dismiss="modal"
+                        @click="createMenu()"
+                      >
+                        確認
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="editModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header text-bg-warning fw-900">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        修改菜單
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="select-menuName" class="form-label"
+                          >飲料名稱</label
+                        >
+                        <select
+                          id="select-menuName"
+                          class="form-select form-select-lg mt-3"
+                        >
+                          <option value="" selected disabled>
+                            ---選擇菜單名稱---
+                          </option>
+                          <option :value="item.menu_id" v-for="item in menu">
+                            {{ item.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div v-if="selectedMenu">
+                        <div class="mb-3">
+                          <label for="editModal_price" class="form-label"
+                            >價格(低於200)</label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="editModal_price"
+                            name="editModal_price"
+                            v-model="selectedMenu.price"
+                            :class="{ ' is-valid' : editMenuPriceCheck , ' is-invalid' : !editMenuPriceCheck}"
+                          />
+                          <div class="valid-feedback">符合規定</div>
+                          <div class="invalid-feedback">標價錯誤</div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="editModal_category" class="form-label"
+                            >類別</label
+                          >
+                          <select
+                            class="form-select"
+                            id="editModal_category"
+                            name="editModal_category"
+                            v-model="selectedMenu.category"
+                            :class="{ ' is-valid' : editMenuCategoryCheck , ' is-invalid' : !editMenuCategoryCheck}"
+                          >
+                            <option disabled value="">請選擇類別</option>
+                            <option
+                              v-for="item in uniqueCategories"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </option>
+                            <option value="其他">其他</option>
+                          </select>
+                          <div class="valid-feedback">符合規定</div>
+                          <div class="invalid-feedback">請選擇類別</div>
+
+                          <div
+                            v-if="selectedMenu.category === '其他'"
+                            class="mt-3"
+                          >
+                            <label for="customCategory" class="form-label"
+                              >請輸入自定義類別(5字以內)</label
+                            >
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="customCategory"
+                              name="customCategory"
+                              v-model="editCustomCategory"
+                              placeholder="輸入類別名稱"
+                              :class="{ ' is-valid' : editMenuCustomCategoryCheck , ' is-invalid' : !editMenuCustomCategoryCheck}"
+                            />
+                            <div class="valid-feedback">符合規定</div>
+                            <div class="invalid-feedback">字數錯誤</div>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="editModal_status" class="form-label"
+                            >狀態</label
+                          >
+                          <select
+                            class="form-select"
+                            id="editModal_status"
+                            name="editModal_status"
+                            v-model="selectedMenu.status"
+                            :class="{ ' is-valid' : editMenuStatusCheck , ' is-invalid' : !editMenuStatusCheck}"
+                          >
+                            <option disabled value="">請選擇狀態</option>
+                            <option value="上架">上架</option>
+                            <option value="下架">下架</option>
+                          </select>
+                          <div class="valid-feedback">符合規定</div>
+                          <div class="invalid-feedback">請選擇狀態</div>
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          取消
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          data-bs-dismiss="modal"
+                          @click="updataMenu()"
+                        >
+                          確認修改
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'bg-order'">
+            <div class="container">
+              <div class="row">
+                <div class="row">
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectcity"
+                    >
+                      <option value="" selected disabled>
+                        ---選擇縣市名稱---
+                      </option>
+                      <option
+                        :value="city[key].city"
+                        v-for="(item,key) in city"
+                      >
+                        {{city[key].city}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectarea"
+                    >
+                      <option value="" selected disabled>
+                        ---選擇鄉鎮區名稱---
+                      </option>
+                      <option
+                        :value="area[key].area"
+                        v-for="(item,key) in area"
+                      >
+                        {{area[key].area}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectstore"
+                    >
+                      <option value="" selected disabled>---選擇門市---</option>
+                      <template v-for="item in store">
+                        <option :value="item.store_id">
+                          店名:{{item.name}} 地址:{{item.address}}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectstatus"
+                    >
+                      <option value="全部">全部</option>
+                      <option value="已支付">已支付</option>
+                      <option value="待支付">待支付</option>
+                      <option value="已取消">已取消</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-lg-12">
+                  <div class="card mt-3">
+                    <div class="card-header bg-info h3">訂單管理</div>
+                    <div class="card-body">
+                      <table class="table shadow-lg mt-5 table-rwd">
+                        <thead class="table-warning">
+                          <tr>
+                            <th class="align-middle">訂單編號</th>
+                            <th class="align-middle">餐點名稱</th>
+                            <th class="align-middle">狀態</th>
+                            <th class="align-middle">數量</th>
+                            <th class="align-middle">總金額</th>
+                            <th class="align-middle">
+                              訂餐時間
+                              <button
+                                class="btn"
+                                @click="sortTable('order_date')"
+                                v-if="!sortAsc"
+                              >
+                                <i class="fa-solid fa-arrow-up"></i>
+                              </button>
+                              <button
+                                class="btn"
+                                @click="sortTable('order_date')"
+                                v-if="sortAsc"
+                              >
+                                <i class="fa-solid fa-arrow-down"></i>
+                              </button>
+                            </th>
+                            <th class="align-middle">功能</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <div
+                            class="h3 text-center"
+                            v-if="filterStatusData == '' || filterStatusData == null"
+                          >
+                            請選擇資料
+                          </div>
+                          <tr
+                            v-if="filterStatusData != null"
+                            v-for="item in filterStatusDataforPage[currentPage]"
+                          >
+                            <td>{{ item.order_id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.status }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.total_price }}</td>
+                            <td>{{ item.order_date }}</td>
+
+                            <td>
+                              <button
+                                class="btn btn-success me-2"
+                                v-if="item.status != '已支付'"
+                                @click="statusedit(item.order_id,'已支付')"
+                              >
+                                付款完成
+                              </button>
+                              <button
+                                class="btn btn-warning me-2"
+                                v-if="item.status != '待支付'"
+                                @click="statusedit(item.order_id,'待支付')"
+                              >
+                                等待支付
+                              </button>
+                              <button
+                                class="btn btn-danger me-2"
+                                v-if="item.status != '已取消'"
+                                @click="statusedit(item.order_id,'已取消')"
+                              >
+                                訂單取消
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row my-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                      <li class="page-item" v-if="currentPage != 0">
+                        <a
+                          class="page-link"
+                          aria-label="Previous"
+                          @click="currentPage -= 1"
+                        >
+                          <span aria-hidden="true">&laquo;</span>
+                        </a>
+                      </li>
+
+                      <li
+                        class="page-item"
+                        :class="{ ' active' : currentPage==key }"
+                        v-for="(item, key) in filterStatusDataforPage"
+                      >
+                        <span class="page-link" @click="currentPage = key"
+                          >{{ key + 1 }}</span
+                        >
+                      </li>
+                      <li
+                        class="page-item"
+                        v-if="currentPage != filterStatusDataforPage.length-1"
+                      >
+                        <a
+                          class="page-link"
+                          aria-label="Next"
+                          @click="currentPage += 1"
+                        >
+                          <span aria-hidden="true">&raquo;</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'bg-chart'">
+            <div class="container">
+              <div class="row">
+                <div class="row">
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectcity"
+                    >
+                      <option value="" selected disabled>
+                        ---選擇縣市名稱---
+                      </option>
+                      <option
+                        :value="city[key].city"
+                        v-for="(item,key) in city"
+                      >
+                        {{city[key].city}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectarea"
+                    >
+                      <option value="" selected disabled>
+                        ---選擇鄉鎮區名稱---
+                      </option>
+                      <option
+                        :value="area[key].area"
+                        v-for="(item,key) in area"
+                      >
+                        {{area[key].area}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectstore"
+                    >
+                      <option value="" selected disabled>---選擇門市---</option>
+                      <template v-for="item in store">
+                        <option :value="item.store_id">
+                          店名:{{item.name}} 地址:{{item.address}}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="col-lg-3">
+                    <select
+                      class="form-select form-select-lg mt-3"
+                      v-model="selectdate"
+                    >
+                      <option value="" selected disabled>---選擇月份---</option>
+                      <option :value="item" v-for="item in uniquedate">
+                        {{ item }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-9">
+                  <div class="card mt-3">
+                    <div class="card-header bg-info">
+                      <div v-if="filteredOrders.length > 0">
+                        <h3>查詢結果：</h3>
+                      </div>
+                      <div v-else>
+                        <h3>沒有符合條件的資料</h3>
+                      </div>
+                    </div>
+                    <div class="card-body" v-if="filteredOrders.length > 0">
+                      <table class="table shadow-lg mt-5 table-rwd">
+                        <thead class="table-warning">
+                          <tr>
+                            <th>餐點名稱</th>
+                            <th>數量</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="item in filteredOrders">
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.totalQuantity }}</td>
+                          </tr>
+                        </tbody>
+                        <div class="h3 text-end">
+                          本月訂單總金額： {{ totalPrice }}
+                        </div>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3 mt-3">
+                  <div
+                    v-for="(chartData, index) in chartDataList"
+                    :key="index"
+                    class="chart-container"
+                  >
+                    <h2>{{ chartData.title }}</h2>
+                    <apexchart
+                      :options="chartData.options"
+                      :series="chartData.series"
+                      height="350"
+                    ></apexchart>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'bg-admin'">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="container">
+                    <div class="card mt-3">
+                      <div class="card-header bg-info h3">
+                        店長管理
+                        <div class="float-end">
+                          <button
+                            class="btn btn-success me-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#createAdminModal"
+                          >
+                            新增店長
+                          </button>
+                          <button
+                            class="btn btn-warning me-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editAdminModal"
+                          >
+                            修改店長
+                          </button>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <data-table
+                          :data="adminuser"
+                          :columns="columnsUser"
+                        ></data-table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="createAdminModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header text-bg-warning fw-900">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        新增店長
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="createAdminModal_store" class="form-label"
+                          >門市編號</label
+                        >
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="createAdminModal_store"
+                          name="createAdminModal_store"
+                          v-model="adminStore"
+                          :class="{ ' is-valid' : createAdminStoreCheck , ' is-invalid' : !createAdminStoreCheck}"
+                        />
+                        <div class="valid-feedback">
+                          {{ createAdminStoreValue }}
+                        </div>
+                        <div class="invalid-feedback">
+                          {{ createAdminStoreValue }}
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createAdminModal_name" class="form-label"
+                          >用戶名(不超過12字符)</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="createAdminModal_name"
+                          name="createAdminModal_name"
+                          v-model="adminName"
+                          :class="{ ' is-valid' : createAdminNameCheck , ' is-invalid' : !createAdminNameCheck}"
+                        />
+                        <div class="valid-feedback">
+                          {{ createAdminNameValue }}
+                        </div>
+                        <div class="invalid-feedback">
+                          {{ createAdminNameValue }}
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createAdminModal_pwd" class="form-label"
+                          >密碼</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="createAdminModal_pwd"
+                          name="createAdminModal_pwd"
+                          v-model="adminPassword"
+                          :class="{ ' is-valid' : createAdminPasswordCheck , ' is-invalid' : !createAdminPasswordCheck}"
+                        />
+                        <div class="valid-feedback">符合規定</div>
+                        <div class="invalid-feedback">
+                          <p>1.至少 8 ~ 16 個字元</p>
+                          <p>2.大小寫字母</p>
+                          <p>3.至少一個數字</p>
+                          <p>4.特殊符號</p>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="createAdminModal_email" class="form-label"
+                          >信箱
+                        </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="createAdminModal_email"
+                          name="createAdminModal_email"
+                          v-model="adminEmail"
+                          :class="{ ' is-valid' : createAdminEmailCheck , ' is-invalid' : !createAdminEmailCheck}"
+                        />
+                        <div class="valid-feedback">符合規定</div>
+                        <div class="invalid-feedback">不符合規定</div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        取消
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-dismiss="modal"
+                        @click="createAdmin()"
+                      >
+                        確認
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="editAdminModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header text-bg-warning fw-900">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        修改店長
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="editAdminModal_username" class="form-label"
+                          >用戶名</label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="editAdminModal_username"
+                          name="editAdminModal_username"
+                          v-model="editAdminName"
+                          @input="editAdmin"
+                          :class="{ ' is-valid' : selectAdminName != null , ' is-invalid' : selectAdminName == null}"
+                        />
+                        <div class="valid-feedback">有此資料</div>
+                        <div class="invalid-feedback">無此資料</div>
+                      </div>
+                      <div v-if="selectAdminName">
+                        <div class="mb-3">
+                          <label for="editAdminModal_store" class="form-label"
+                            >門市代碼</label
+                          >
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="editAdminModal_store"
+                            name="editAdminModal_store"
+                            v-model="selectAdminName.store_id"
+                            :class="{ ' is-valid' : editAdminStoreCheck , ' is-invalid' : !editAdminStoreCheck}"
+                          />
+                          <div class="valid-feedback">
+                            {{ editAdminStoreValue }}
+                          </div>
+                          <div class="invalid-feedback">
+                            {{ editAdminStoreValue }}
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <button class="btn btn-danger" @click="deleteAdmin()">
+                            註銷此帳號
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          取消
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          data-bs-dismiss="modal"
+                          @click="updateAdmin()"
+                        >
+                          確認修改
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="js/banner.js"></script>
+
+    <script type="module">
+      const { createApp, defineComponent } = Vue;
+
+      const DataTable = Vue.defineComponent({
+        props: ["data", "columns"],
+        mounted() {
+          this.$nextTick(() => {
+            this.dt = $(this.$el).DataTable({
+              data: this.data,
+              columns: [
+                ...this.columns.map((col) => ({
+                  title: col.label,
+                  data: col.key,
+                })),
+              ],
+              responsive: true,
+            });
+          });
+        },
+        watch: {
+          data(newData) {
+            if (this.dt) {
+              this.dt.clear().rows.add(newData).draw();
+            }
+          },
+          columns(newColumns) {
+            if (this.dt) {
+              this.dt.destroy();
+              this.dt = $(this.$el).DataTable({
+                data: this.data,
+                columns: [
+                  ...newColumns.map((col) => ({
+                    title: col.label,
+                    data: col.key,
+                  })),
+                ],
+              });
+            }
+          },
+        },
+        beforeUnmount() {
+          if (this.dt) {
+            this.dt.destroy();
+          }
+        },
+        template: "<table class='display' style='width:100%'></table>",
+      });
+
+      const ApexChart = defineComponent({
+        props: ["options", "series", "height"],
+        mounted() {
+          this.chart = new ApexCharts(this.$el, {
+            ...this.options,
+            series: this.series,
+          });
+          this.chart.render();
+        },
+        watch: {
+          options(newOptions) {
+            if (this.chart) {
+              this.chart.updateOptions(newOptions);
+            }
+          },
+          series(newSeries) {
+            if (this.chart) {
+              this.chart.updateSeries(newSeries);
+            }
+          },
+        },
+        beforeUnmount() {
+          if (this.chart) {
+            this.chart.destroy();
+          }
+        },
+        template: "<div :style=\"{height: height + 'px'}\"></div>",
+      });
+
+      const app = {
+        components: {
+          apexchart: ApexChart,
+          DataTable,
+        },
+        data() {
+          return {
+            currentcontent: "bg-menu",
+            user: [],
+            menu: [],
+            adminuser: [],
+            columns: [
+              { label: "餐點名稱", key: "name" },
+              { label: "價格", key: "price" },
+              { label: "類別", key: "category" },
+              { label: "狀態", key: "status" },
+            ],
+            columnsUser: [
+              { label: "商店代碼", key: "store_id" },
+              { label: "商店代號", key: "name" },
+              { label: "帳號", key: "username" },
+              { label: "信箱", key: "email" },
+            ],
+            menuName: "",
+            menuPrice: 0,
+            menuCategory: "",
+            menuStatus: "",
+            createCustomCategory: "",
+            editCustomCategory: "",
+            selectedMenu: null,
+            selectedMenuid: null,
+            createMenuNameCheck: false,
+            createMenuPriceCheck: false,
+            createMenuCategoryCheck: false,
+            createMenuCustomCategoryCheck: false,
+            createMenuStatusCheck: false,
+            createMenuNameValue: "請輸入",
+            editMenuPriceCheck: false,
+            editMenuCategoryCheck: false,
+            editMenuCustomCategoryCheck: false,
+            editMenuStatusCheck: false,
+            adminStore: "",
+            adminName: "",
+            adminPassword: "",
+            adminEmail: "",
+            editAdminName: "",
+            selectAdminName: null,
+            createAdminStoreCheck: false,
+            createAdminStoreValue: "請輸入",
+            createAdminNameCheck: false,
+            createAdminNameValue: "請輸入",
+            createAdminPasswordCheck: false,
+            createAdminEmailCheck: false,
+            editAdminStoreCheck: false,
+            editAdminStoreValue: "請輸入",
+            order: [],
+            city: [],
+            area: [],
+            store: [],
+            filterStatusData: [],
+            selectcity: "",
+            selectarea: "",
+            selectstore: "",
+            selectstatus: "全部",
+            currentPage: 0,
+            sortBy: "order_date",
+            sortAsc: false,
+            selectdate: "",
+            filteredOrders: [],
+            chartDataList: [
+              {
+                title: "柱狀圖",
+                options: {
+                  chart: {
+                    type: "bar",
+                    id: "chart-1",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  xaxis: {
+                    categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    title: {
+                      text: "月份",
+                    },
+                  },
+                  yaxis: {
+                    title: {
+                      text: "銷售量",
+                    },
+                  },
+                  title: {
+                    text: "本月銷售量 - 柱狀圖",
+                    align: "center",
+                  },
+                },
+                series: [
+                  {
+                    name: "銷售量",
+                    data: [30, 40, 35, 50, 49, 60],
+                  },
+                ],
+              },
+              {
+                title: "折線圖",
+                options: {
+                  chart: {
+                    type: "line",
+                    id: "chart-2",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  xaxis: {
+                    categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    title: {
+                      text: "月份",
+                    },
+                  },
+                  yaxis: {
+                    title: {
+                      text: "銷售量",
+                    },
+                  },
+                  title: {
+                    text: "本月銷售量 - 折線圖",
+                    align: "center",
+                  },
+                },
+                series: [
+                  {
+                    name: "銷售量",
+                    data: [30, 40, 35, 50, 49, 60],
+                  },
+                ],
+              },
+              {
+                title: "圓環圖",
+                options: {
+                  chart: {
+                    type: "donut",
+                    id: "chart-3",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  labels: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                  title: {
+                    text: "每月銷售量 - 圓環圖",
+                    align: "center",
+                  },
+                },
+                series: [30, 40, 35, 50, 49, 60],
+              },
+            ],
+          };
+        },
+        created() {
+          const vm = this;
+
+          var JSONdata = {};
+          JSONdata["uid01"] = getCookie("Uid01");
+          $.ajax({
+            type: "POST",
+            url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuid",
+            data: JSON.stringify(JSONdata),
+            dataType: "json",
+            async: false,
+            success: function (data) {
+              vm.user = data.data;
+              if (data.data.vip_level < 1000) {
+                Swal.fire({
+                  title: "權限不足",
+                  allowOutsideClick: false,
+                  icon: "error",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    location.href = "../index.html";
+                  }
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                title: "API介接錯誤!",
+                text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuid",
+                icon: "error",
+              });
+            },
+          });
+          vm.searchmenu();
+          $.ajax({
+            type: "GET",
+            url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectcity",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+              vm.city = data.data;
+            },
+            error: function () {
+              Swal.fire({
+                title: "API介接錯誤?",
+                text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectcity",
+                icon: "error",
+              });
+            },
+          });
+          vm.loadModule(vm.currentcontent);
+          vm.searchAdmin();
+        },
+        methods: {
+          loadModule(module) {
+            const vm = this;
+            vm.currentcontent = module;
+            if (vm.currentcontent == "bg-menu") {
+              $(document).ready(function () {
+                $("#select-menuName")
+                  .select2({
+                    theme: "bootstrap-5",
+                    dropdownParent: $("#editModal"),
+                  })
+                  .on("change", (e) => {
+                    vm.selectedMenuid = $(e.target).val();
+                    vm.editMenu(vm.selectedMenuid);
+                  });
+              });
+            }
+          },
+          searchmenu() {
+            const vm = this;
+            $.ajax({
+              type: "GET",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allmenu",
+              dataType: "json",
+              async: false,
+              success: function (data) {
+                vm.menu = data.data;
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=allmenu",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          createMenu() {
+            const vm = this;
+
+            if (
+              vm.createMenuNameCheck &&
+              vm.createMenuPriceCheck &&
+              vm.createMenuCategoryCheck &&
+              vm.createMenuCustomCategoryCheck &&
+              vm.createMenuStatusCheck
+            ) {
+              var JSONdata = {};
+              JSONdata["name"] = vm.menuName;
+              JSONdata["price"] = vm.menuPrice;
+              if (vm.menuCategory != "" && vm.menuCategory != "其他") {
+                JSONdata["category"] = vm.menuCategory;
+              } else if (
+                vm.createCustomCategory != "" &&
+                vm.menuCategory == "其他"
+              ) {
+                JSONdata["category"] = vm.createCustomCategory;
+              }
+              JSONdata["status"] = vm.menuStatus;
+              $.ajax({
+                type: "POST",
+                url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=createmenu",
+                data: JSON.stringify(JSONdata),
+                dataType: "json",
+                success: function (data) {
+                  Swal.fire({
+                    title: data.message,
+                    icon: "success",
+                  }).then((result) => {
+                    vm.menuName = "";
+                    vm.menuPrice = 0;
+                    vm.menuCategory = "";
+                    vm.createCustomCategory = "";
+                    vm.menuStatus = "";
+                    searchmenu();
+                  });
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤!",
+                    text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=createmenu",
+                    icon: "error",
+                  });
+                },
+              });
+            } else {
+              Swal.fire({
+                title: "資料錯誤",
+                icon: "error",
+              });
+            }
+          },
+          editMenu(menuId) {
+            this.selectedMenu = this.menu.find(
+              (item) => item.menu_id === Number(menuId)
+            );
+          },
+          updataMenu() {
+            const vm = this;
+
+            if (
+              vm.editMenuPriceCheck &&
+              vm.editMenuCategoryCheck &&
+              vm.editMenuCustomCategoryCheck &&
+              vm.editMenuStatusCheck
+            ) {
+              var JSONdata = {};
+              JSONdata["menu_id"] = vm.selectedMenu.menu_id;
+              JSONdata["name"] = vm.selectedMenu.name;
+              JSONdata["price"] = vm.selectedMenu.price;
+              if (
+                vm.selectedMenu.category != "" &&
+                vm.selectedMenu.category != "其他"
+              ) {
+                JSONdata["category"] = vm.selectedMenu.category;
+              } else if (
+                vm.editCustomCategory != "" &&
+                vm.selectedMenu.category == "其他"
+              ) {
+                JSONdata["category"] = vm.editCustomCategory;
+              }
+              JSONdata["status"] = vm.selectedMenu.status;
+              Swal.fire({
+                title: "確定修改嗎?",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "取消",
+                confirmButtonText: "確定修改",
+                icon: "question",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  $.ajax({
+                    type: "POST",
+                    url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editmenu",
+                    data: JSON.stringify(JSONdata),
+                    dataType: "json",
+                    success: function (data) {
+                      Swal.fire({
+                        title: data.message,
+                        icon: "success",
+                      }).then((result) => {
+                        searchmenu();
+                      });
+                    },
+                    error: function () {
+                      Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editmenu",
+                        icon: "error",
+                      });
+                    },
+                  });
+                }
+              });
+            } else {
+              Swal.fire({
+                title: "資料錯誤",
+                icon: "error",
+              });
+            }
+          },
+          statusedit(order, status) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["order_id"] = order;
+            JSONdata["status"] = status;
+            vm.selectstatus = status;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editorderstatusdata",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                var JSONstoredata = {};
+                JSONstoredata["store_id"] = vm.selectstore;
+                $.ajax({
+                  type: "POST",
+                  url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                  dataType: "json",
+                  data: JSON.stringify(JSONstoredata),
+                  success: function (data) {
+                    console.log(data);
+                    vm.order = data.data;
+                  },
+                  error: function () {
+                    Swal.fire({
+                      title: "API介接錯誤?",
+                      text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                      icon: "error",
+                    });
+                  },
+                });
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editorderstatusdata",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          orderdatainput() {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["store_id"] = vm.selectstore;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                vm.order = data.data;
+                vm.selectstatus = "全部";
+                vm.filterStatusData = vm.order;
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          sortTable(column) {
+            if (this.sortBy === column) {
+              this.sortAsc = !this.sortAsc;
+            } else {
+              this.sortBy = column;
+              this.sortAsc = true;
+            }
+          },
+          filterOrders(month) {
+            if (!month) {
+              this.filteredOrders = [];
+              return;
+            }
+
+            const filtered = this.order.filter((orders) => {
+              return (
+                orders.status === "已支付" &&
+                orders.order_date.startsWith(month)
+              );
+            });
+
+            const processedOrderIds = new Set();
+
+            const result = [];
+            const grouped = filtered.reduce((acc, order) => {
+              if (acc[order.name]) {
+                acc[order.name].totalQuantity += order.quantity;
+              } else {
+                acc[order.name] = {
+                  name: order.name,
+                  totalQuantity: order.quantity,
+                  totalPrice: 0,
+                };
+              }
+
+              if (!processedOrderIds.has(order.order_id)) {
+                acc[order.name].totalPrice += order.total_price;
+                processedOrderIds.add(order.order_id);
+              }
+
+              return acc;
+            }, {});
+
+            for (const key in grouped) {
+              result.push(grouped[key]);
+            }
+
+            this.filteredOrders = result;
+          },
+          searchAdmin() {
+            const vm = this;
+            $.ajax({
+              type: "GET",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getalluser",
+              dataType: "json",
+              async: false,
+              success: function (data) {
+                vm.adminuser = data.data;
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getalluser",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          createAdmin() {
+            const vm = this;
+
+            if (
+              vm.createAdminStoreCheck &&
+              vm.createAdminNameCheck &&
+              vm.createAdminPasswordCheck &&
+              vm.createAdminEmailCheck
+            ) {
+              var JSONdata = {};
+              JSONdata["store_id"] = vm.adminStore;
+              JSONdata["username"] = vm.adminName;
+              JSONdata["password"] = vm.adminPassword;
+              JSONdata["email"] = vm.adminEmail;
+              $.ajax({
+                type: "POST",
+                url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=createadmindata",
+                data: JSON.stringify(JSONdata),
+                dataType: "json",
+                success: function (data) {
+                  Swal.fire({
+                    title: data.message,
+                    icon: "success",
+                  }).then((result) => {
+                    vm.adminStore = "";
+                    vm.adminName = "";
+                    vm.adminPassword = "";
+                    vm.adminEmail = "";
+                    vm.searchAdmin();
+                  });
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤!",
+                    text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=createadmindata",
+                    icon: "error",
+                  });
+                },
+              });
+            } else {
+              Swal.fire({
+                title: "資料錯誤",
+                icon: "error",
+              });
+            }
+          },
+          editAdmin(event) {
+            this.selectAdminName = [];
+            this.selectAdminName = this.adminuser.find(
+              (item) => item.username === this.editAdminName
+            );
+          },
+          updateAdmin() {
+            const vm = this;
+
+            if (vm.editAdminStoreCheck) {
+              var JSONdata = {};
+              JSONdata["store_id"] = vm.selectAdminName.store_id;
+              JSONdata["username"] = vm.selectAdminName.username;
+              Swal.fire({
+                title: "確定修改嗎?",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "取消",
+                confirmButtonText: "確定修改",
+                icon: "question",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  $.ajax({
+                    type: "POST",
+                    url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editadmindata",
+                    data: JSON.stringify(JSONdata),
+                    dataType: "json",
+                    success: function (data) {
+                      Swal.fire({
+                        title: data.message,
+                        icon: "success",
+                      }).then((result) => {
+                        vm.editAdminName = "";
+                        selectAdminName = null;
+                        vm.searchAdmin();
+                      });
+                    },
+                    error: function () {
+                      Swal.fire({
+                        title: "API介接錯誤!",
+                        text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editadmindata",
+                        icon: "error",
+                      });
+                    },
+                  });
+                }
+              });
+            } else {
+              Swal.fire({
+                title: "資料錯誤",
+                icon: "error",
+              });
+            }
+          },
+          deleteAdmin() {
+            const vm = this;
+            Swal.fire({
+              title: "確定註銷此帳號?",
+              showCancelButton: true,
+              confirmButtonColor: "#F00",
+              cancelButtonColor: "#d33",
+              cancelButtonText: "取消",
+              confirmButtonText: "註銷",
+              icon: "warning",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                Swal.fire({
+                  title: "重要須知",
+                  text: "註銷動作無法返回，確定註銷?",
+                  showCancelButton: true,
+                  confirmButtonColor: "#F00",
+                  cancelButtonColor: "#d33",
+                  cancelButtonText: "取消",
+                  confirmButtonText: "註銷",
+                  icon: "warning",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    Swal.fire({
+                      title: "最終返回機會",
+                      showCancelButton: true,
+                      confirmButtonColor: "#F00",
+                      cancelButtonColor: "#d33",
+                      cancelButtonText: "取消",
+                      confirmButtonText: "註銷",
+                      icon: "warning",
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        var JSONdata = {};
+                        JSONdata["username"] = vm.selectAdminName.username;
+                        $.ajax({
+                          type: "POST",
+                          url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=deleteadmindata",
+                          data: JSON.stringify(JSONdata),
+                          dataType: "json",
+                          success: function (data) {
+                            Swal.fire({
+                              title: data.message,
+                              icon: "success",
+                            }).then((result) => {
+                              vm.searchAdmin();
+                            });
+                          },
+                          error: function () {
+                            Swal.fire({
+                              title: "API介接錯誤!",
+                              text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=deleteadmindata",
+                              icon: "error",
+                            });
+                          },
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          },
+        },
+        computed: {
+          uniqueCategories() {
+            return [...new Set(this.menu.map((item) => item.category))];
+          },
+          sortedOrders() {
+            if (this.filterStatusData != null) {
+              return this.filterStatusData.sort((a, b) => {
+                if (this.sortAsc) {
+                  return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
+                } else {
+                  return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
+                }
+              });
+            }
+            return [
+              {
+                order_id: "",
+                name: "",
+                status: "",
+                quantity: "",
+                total_price: "",
+                order_date: "",
+              },
+            ];
+          },
+          filterStatusDataforPage() {
+            const vm = this;
+            let newData = [];
+            vm.sortedOrders.forEach((item, key) => {
+              if (key % 10 == 0) {
+                newData.push([]);
+              }
+              const page = parseInt(key / 10);
+              newData[page].push(item);
+            });
+            return newData;
+          },
+          uniquedate() {
+            if (this.order.length > 0) {
+              const filtered = this.order.filter((orders) => {
+                return orders.status === "已支付";
+              });
+              const uniqueMonths = [
+                ...new Set(
+                  filtered.map((item) => {
+                    const date = new Date(item.order_date);
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0");
+                    return `${year}-${month}`;
+                  })
+                ),
+              ];
+
+              return uniqueMonths.sort((a, b) => {
+                const dateA = new Date(a + "-01");
+                const dateB = new Date(b + "-01");
+                return dateB - dateA;
+              });
+            }
+          },
+          totalPrice() {
+            return this.filteredOrders.reduce(
+              (sum, item) => sum + item.totalPrice,
+              0
+            );
+          },
+        },
+        watch: {
+          menuName(newValue) {
+            const vm = this;
+            if (newValue.length > 0 && newValue.length <= 8) {
+              var JSONdata = {};
+              JSONdata["name"] = vm.menuName;
+              $.ajax({
+                type: "POST",
+                url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkmenuuni",
+                dataType: "json",
+                data: JSON.stringify(JSONdata),
+                success: function (data) {
+                  if (data.state) {
+                    vm.createMenuNameValue = data.message;
+                    vm.createMenuNameCheck = true;
+                  } else {
+                    vm.createMenuNameValue = data.message;
+                    vm.createMenuNameCheck = false;
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkmenuuni",
+                    icon: "error",
+                  });
+                },
+              });
+            } else {
+              vm.createMenuNameValue = "字數不符";
+              vm.createMenuNameCheck = false;
+            }
+          },
+          menuPrice(newValue) {
+            if (newValue > 0 && newValue <= 200) {
+              this.createMenuPriceCheck = true;
+            } else {
+              this.createMenuPriceCheck = false;
+            }
+          },
+          menuCategory(newValue) {
+            if (newValue == "") {
+              this.createMenuCategoryCheck = false;
+              this.createMenuCustomCategoryCheck = false;
+            }
+            if (newValue != "其他") {
+              this.createCustomCategory = "";
+              this.createMenuCategoryCheck = true;
+              this.createMenuCustomCategoryCheck = true;
+            }
+            if (newValue == "其他") {
+              this.createMenuCategoryCheck = true;
+              this.createMenuCustomCategoryCheck = false;
+            }
+          },
+          createCustomCategory(newValue) {
+            const vm = this;
+            if (vm.menuCategory === "其他") {
+              if (newValue.length > 0 && newValue.length <= 5) {
+                this.createMenuCustomCategoryCheck = true;
+              } else {
+                this.createMenuCustomCategoryCheck = false;
+              }
+            } else {
+              this.createCustomCategory = "";
+              this.createMenuCustomCategoryCheck = false;
+            }
+          },
+          menuStatus(newValue) {
+            if (newValue != "") {
+              this.createMenuStatusCheck = true;
+            } else {
+              this.createMenuStatusCheck = false;
+            }
+          },
+          "selectedMenu.price": function (newValue) {
+            if (newValue > 0 && newValue <= 200) {
+              this.editMenuPriceCheck = true;
+            } else {
+              this.editMenuPriceCheck = false;
+            }
+          },
+          "selectedMenu.category": function (newValue) {
+            if (newValue == "") {
+              this.editMenuCategoryCheck = false;
+              this.editMenuCustomCategoryCheck = false;
+            }
+            if (newValue != "其他") {
+              this.createCustomCategory = "";
+              this.editMenuCategoryCheck = true;
+              this.editMenuCustomCategoryCheck = true;
+            }
+            if (newValue == "其他") {
+              this.editMenuCategoryCheck = true;
+              this.editMenuCustomCategoryCheck = false;
+            }
+          },
+          editCustomCategory(newValue) {
+            const vm = this;
+            if (vm.selectedMenu.category === "其他") {
+              if (newValue.length > 0 && newValue.length <= 5) {
+                this.editMenuCustomCategoryCheck = true;
+              } else {
+                this.editMenuCustomCategoryCheck = false;
+              }
+            } else {
+              this.editMenuCustomCategoryCheck = false;
+            }
+          },
+          "selectedMenu.status": function (newValue) {
+            if (newValue != "") {
+              this.editMenuStatusCheck = true;
+            } else {
+              this.editMenuStatusCheck = false;
+            }
+          },
+          selectcity: function (newValue) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["city"] = vm.selectcity;
+
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectarea",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                vm.area = data.data;
+                vm.selectarea = "";
+                vm.selectstore = "";
+                vm.selectstatus = "全部";
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectarea",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          selectarea: function (newValue) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["city"] = vm.selectcity;
+            JSONdata["area"] = vm.selectarea;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectstore",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                vm.store = data.data;
+                vm.selectstore = "";
+                vm.selectstatus = "全部";
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=selectstore",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          selectstore: function () {
+            this.selectstatus = "全部";
+            this.orderdatainput();
+          },
+          order: function () {
+            const vm = this;
+            if (vm.filterStatusData != "") {
+              if (vm.selectstatus == "全部") {
+                vm.filterStatusData = vm.order;
+              } else {
+                vm.filterStatusData = [];
+                vm.order.forEach((item) => {
+                  if (item.status == vm.selectstatus) {
+                    vm.filterStatusData.push(item);
+                  }
+                });
+              }
+            }
+          },
+          selectstatus: function () {
+            const vm = this;
+            if (vm.filterStatusData != "") {
+              if (vm.selectstatus == "全部") {
+                vm.filterStatusData = vm.order;
+              } else {
+                vm.filterStatusData = [];
+                vm.order.forEach((item) => {
+                  if (item.status == vm.selectstatus) {
+                    vm.filterStatusData.push(item);
+                  }
+                });
+              }
+            }
+          },
+          selectdate(event) {
+            const vm = this;
+            vm.filterOrders(event);
+
+            vm.chartDataList.forEach(function (chartData) {
+              const newOption = { ...chartData.options };
+              let newSeries = [...chartData.series];
+              if (newOption.xaxis) {
+                newOption.xaxis.categories = [];
+              }
+              if (newSeries[0].data) {
+                newSeries[0].data = [];
+              }
+
+              vm.filteredOrders.forEach(function (item) {
+                if (newOption.xaxis) {
+                  newOption.xaxis.categories.push(item.name);
+                }
+                if (newSeries[0].data) {
+                  newSeries[0].data.push(item.totalQuantity);
+                }
+              });
+
+              if (chartData.options.chart.type === "donut") {
+                newOption.labels = vm.filteredOrders.map(function (item) {
+                  return item.name;
+                });
+                newSeries = vm.filteredOrders.map(function (item) {
+                  return item.totalQuantity;
+                });
+              }
+
+              chartData.options = newOption;
+              chartData.series = newSeries;
+            });
+          },
+          adminStore(newValue) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["store_id"] = vm.adminStore;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkstoreuni",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                if (data.state) {
+                  console.log(data);
+                  vm.createAdminStoreValue = data.message + data.data.name;
+                  vm.createAdminStoreCheck = true;
+                } else {
+                  vm.createAdminStoreValue = data.message;
+                  vm.createAdminStoreCheck = false;
+                }
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkstoreuni",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          adminName(newValue) {
+            const vm = this;
+            if (newValue.length <= 12) {
+              var JSONdata = {};
+              JSONdata["username"] = vm.adminName;
+              $.ajax({
+                type: "POST",
+                url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuni",
+                dataType: "json",
+                data: JSON.stringify(JSONdata),
+                success: function (data) {
+                  if (data.state) {
+                    vm.createAdminNameValue = data.message;
+                    vm.createAdminNameCheck = true;
+                  } else {
+                    vm.createAdminNameValue = data.message;
+                    vm.createAdminNameCheck = false;
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuni",
+                    icon: "error",
+                  });
+                },
+              });
+              this.createAdminNameCheck = true;
+            } else {
+              this.createAdminNameCheck = false;
+            }
+          },
+          adminPassword(newValue) {
+            const vm = this;
+            const rules =
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+
+            if (rules.test(newValue)) {
+              vm.createAdminPasswordCheck = true;
+            } else {
+              vm.createAdminPasswordCheck = false;
+            }
+          },
+          adminEmail(newValue) {
+            const vm = this;
+            const rules = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+            if (rules.test(newValue)) {
+              vm.createAdminEmailCheck = true;
+            } else {
+              vm.createAdminEmailCheck = false;
+            }
+          },
+          "selectAdminName.store_id": function (newValue) {
+            const vm = this;
+            if (vm.selectAdminName != null) {
+              var JSONdata = {};
+              JSONdata["store_id"] = vm.selectAdminName.store_id;
+              $.ajax({
+                type: "POST",
+                url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkstoreuni",
+                dataType: "json",
+                data: JSON.stringify(JSONdata),
+                success: function (data) {
+                  if (data.state) {
+                    console.log(data);
+                    vm.editAdminStoreValue = data.message + data.data.name;
+                    vm.editAdminStoreCheck = true;
+                  } else {
+                    vm.editAdminStoreValue = data.message;
+                    vm.editAdminStoreCheck = false;
+                  }
+                },
+                error: function () {
+                  Swal.fire({
+                    title: "API介接錯誤?",
+                    text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkstoreuni",
+                    icon: "error",
+                  });
+                },
+              });
+            }
+          },
+        },
+      };
+      Vue.createApp(app).mount("#app");
+    </script>
+
+    <script>
+      $(function () {
+        $("#logout_btn").click(function () {
+          setCookie("Uid01", ",7");
+          location.href = "../index.html";
+        });
+      });
+    </script>
+  </body>
+</html>

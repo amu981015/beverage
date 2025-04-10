@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>點餐系統</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/all.min.css" />
+    <link rel="stylesheet" href="css/datatable.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="banner">
+        <div class="">
+          <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="storebackground.html">
+                <i class="fa-brands fa-envira fa-2x" style="color: green"></i>
+              </a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-order')"
+                      >訂單管理</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#"
+                      @click="loadModule('bg-chart')"
+                      >報表</a
+                    >
+                  </li>
+                </ul>
+                <div>
+                  <li class="dropdown d-none" id="s02_background_btn">
+                    <a
+                      style="display: inline"
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      <span
+                        class="h4 text-center"
+                        id="s02_username_text"
+                        style="color: var(--white)"
+                        >XXX</span
+                      >
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a class="dropdown-item" href="../index.html">回首頁</a>
+                      </li>
+                      <li>
+                        <a id="logout_btn" class="dropdown-item">登出</a>
+                      </li>
+                    </ul>
+                  </li>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column min-vh-100">
+        <div id="content" class="flex-grow-1">
+          <div v-if="currentcontent === 'bg-order'">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="card mt-3">
+                    <div class="card-header bg-info">
+                      <div class="row">
+                        <div class="col-lg-9 text-start h3 mt-3">訂單管理</div>
+                        <div class="col-lg-3">
+                          <select
+                            class="form-select form-select-lg mt-3"
+                            v-model="selectstatus"
+                          >
+                            <option value="全部">全部</option>
+                            <option value="已支付">已支付</option>
+                            <option value="待支付">待支付</option>
+                            <option value="已取消">已取消</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <table class="table shadow-lg mt-5 table-rwd">
+                        <thead class="table-warning">
+                          <tr>
+                            <th class="align-middle">訂單編號</th>
+                            <th class="align-middle">餐點名稱</th>
+                            <th class="align-middle">狀態</th>
+                            <th class="align-middle">數量</th>
+                            <th class="align-middle">總金額</th>
+                            <th class="align-middle">
+                              訂餐時間
+                              <button
+                                class="btn"
+                                @click="sortTable('order_date')"
+                                v-if="!sortAsc"
+                              >
+                                <i class="fa-solid fa-arrow-up"></i>
+                              </button>
+                              <button
+                                class="btn"
+                                @click="sortTable('order_date')"
+                                v-if="sortAsc"
+                              >
+                                <i class="fa-solid fa-arrow-down"></i>
+                              </button>
+                            </th>
+                            <th class="align-middle">功能</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <div
+                            class="h3 text-center"
+                            v-if="filterStatusData == '' || filterStatusData == null"
+                          >
+                            請選擇資料
+                          </div>
+                          <tr
+                            v-if="filterStatusData != null"
+                            v-for="item in filterStatusDataforPage[currentPage]"
+                          >
+                            <td>{{ item.order_id }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.status }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.total_price }}</td>
+                            <td>{{ item.order_date }}</td>
+
+                            <td>
+                              <button
+                                class="btn btn-success me-2"
+                                v-if="item.status != '已支付'"
+                                @click="statusedit(item.order_id,'已支付')"
+                              >
+                                付款完成
+                              </button>
+                              <button
+                                class="btn btn-warning me-2"
+                                v-if="item.status != '待支付'"
+                                @click="statusedit(item.order_id,'待支付')"
+                              >
+                                等待支付
+                              </button>
+                              <button
+                                class="btn btn-danger me-2"
+                                v-if="item.status != '已取消'"
+                                @click="statusedit(item.order_id,'已取消')"
+                              >
+                                訂單取消
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row my-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                      <li class="page-item" v-if="currentPage != 0">
+                        <a
+                          class="page-link"
+                          aria-label="Previous"
+                          @click="currentPage -= 1"
+                        >
+                          <span aria-hidden="true">&laquo;</span>
+                        </a>
+                      </li>
+
+                      <li
+                        class="page-item"
+                        :class="{ ' active' : currentPage==key }"
+                        v-for="(item, key) in filterStatusDataforPage"
+                      >
+                        <span class="page-link" @click="currentPage = key"
+                          >{{ key + 1 }}</span
+                        >
+                      </li>
+                      <li
+                        class="page-item"
+                        v-if="currentPage != filterStatusDataforPage.length-1"
+                      >
+                        <a
+                          class="page-link"
+                          aria-label="Next"
+                          @click="currentPage += 1"
+                        >
+                          <span aria-hidden="true">&raquo;</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="currentcontent === 'bg-chart'">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-9">
+                  <div class="card mt-3">
+                    <div class="card-header bg-info">
+                      <div class="row">
+                        <div class="col-lg-9 mt-3">
+                          <div v-if="filteredOrders.length > 0">
+                            <h3>查詢結果：</h3>
+                          </div>
+                          <div v-else>
+                            <h3>沒有符合條件的資料</h3>
+                          </div>
+                        </div>
+                        <div class="col-lg-3">
+                          <select
+                            class="form-select form-select-lg mt-3"
+                            v-model="selectdate"
+                          >
+                            <option value="" selected disabled>
+                              ---選擇月份---
+                            </option>
+                            <option :value="item" v-for="item in uniquedate">
+                              {{ item }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body" v-if="filteredOrders.length > 0">
+                      <table class="table shadow-lg mt-5 table-rwd">
+                        <thead class="table-warning">
+                          <tr>
+                            <th>餐點名稱</th>
+                            <th>數量</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="item in filteredOrders">
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.totalQuantity }}</td>
+                          </tr>
+                        </tbody>
+                        <div class="h3 text-end">
+                          本月訂單總金額： {{ totalPrice }}
+                        </div>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-3 mt-3">
+                  <div
+                    v-for="(chartData, index) in chartDataList"
+                    :key="index"
+                    class="chart-container"
+                  >
+                    <h2>{{ chartData.title }}</h2>
+                    <apexchart
+                      :options="chartData.options"
+                      :series="chartData.series"
+                      height="350"
+                    ></apexchart>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="js/datatable.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="../js/auth.js"></script>
+    <script src="js/banner.js"></script>
+
+    <script type="module">
+      const { createApp, defineComponent } = Vue;
+
+      const ApexChart = defineComponent({
+        props: ["options", "series", "height"],
+        mounted() {
+          this.chart = new ApexCharts(this.$el, {
+            ...this.options,
+            series: this.series,
+          });
+          this.chart.render();
+        },
+        watch: {
+          options(newOptions) {
+            if (this.chart) {
+              this.chart.updateOptions(newOptions);
+            }
+          },
+          series(newSeries) {
+            if (this.chart) {
+              this.chart.updateSeries(newSeries);
+            }
+          },
+        },
+        beforeUnmount() {
+          if (this.chart) {
+            this.chart.destroy();
+          }
+        },
+        template: "<div :style=\"{height: height + 'px'}\"></div>",
+      });
+
+      const app = {
+        components: {
+          apexchart: ApexChart,
+        },
+        data() {
+          return {
+            currentcontent: "bg-order",
+            user: [],
+            order: [],
+            city: [],
+            area: [],
+            store: [],
+            filterStatusData: [],
+            selectcity: "",
+            selectarea: "",
+            selectstore: "",
+            selectstatus: "全部",
+            currentPage: 0,
+            sortBy: "order_date",
+            sortAsc: false,
+            selectdate: "",
+            filteredOrders: [],
+            chartDataList: [
+              {
+                title: "柱狀圖",
+                options: {
+                  chart: {
+                    type: "bar",
+                    id: "chart-1",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  xaxis: {
+                    categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    title: {
+                      text: "月份",
+                    },
+                  },
+                  yaxis: {
+                    title: {
+                      text: "銷售量",
+                    },
+                  },
+                  title: {
+                    text: "本月銷售量 - 柱狀圖",
+                    align: "center",
+                  },
+                },
+                series: [
+                  {
+                    name: "銷售量",
+                    data: [30, 40, 35, 50, 49, 60],
+                  },
+                ],
+              },
+              {
+                title: "折線圖",
+                options: {
+                  chart: {
+                    type: "line",
+                    id: "chart-2",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  xaxis: {
+                    categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    title: {
+                      text: "月份",
+                    },
+                  },
+                  yaxis: {
+                    title: {
+                      text: "銷售量",
+                    },
+                  },
+                  title: {
+                    text: "本月銷售量 - 折線圖",
+                    align: "center",
+                  },
+                },
+                series: [
+                  {
+                    name: "銷售量",
+                    data: [30, 40, 35, 50, 49, 60],
+                  },
+                ],
+              },
+              {
+                title: "圓環圖",
+                options: {
+                  chart: {
+                    type: "donut",
+                    id: "chart-3",
+                    toolbar: {
+                      show: false,
+                    },
+                  },
+                  labels: ["1月", "2月", "3月", "4月", "5月", "6月"],
+                  title: {
+                    text: "每月銷售量 - 圓環圖",
+                    align: "center",
+                  },
+                },
+                series: [30, 40, 35, 50, 49, 60],
+              },
+            ],
+          };
+        },
+        created() {
+          const vm = this;
+
+          var JSONdata = {};
+          JSONdata["uid01"] = getCookie("Uid01");
+          $.ajax({
+            type: "POST",
+            url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuid",
+            data: JSON.stringify(JSONdata),
+            dataType: "json",
+            async: false,
+            allowOutsideClick: false,
+            success: function (data) {
+              vm.user = data.data;
+              if (data.data.vip_level < 100) {
+                Swal.fire({
+                  title: "權限不足",
+                  icon: "error",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    location.href = "../index.html";
+                  }
+                });
+              }
+            },
+            error: function () {
+              Swal.fire({
+                title: "API介接錯誤!",
+                text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=checkuid",
+                icon: "error",
+              });
+            },
+          });
+          vm.orderdatainput();
+        },
+        methods: {
+          loadModule(module) {
+            this.currentcontent = module;
+          },
+          statusedit(order, status) {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["order_id"] = order;
+            JSONdata["status"] = status;
+            vm.selectstatus = status;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editorderstatusdata",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                var JSONstoredata = {};
+                JSONstoredata["store_id"] = vm.user.store_id;
+                $.ajax({
+                  type: "POST",
+                  url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                  dataType: "json",
+                  data: JSON.stringify(JSONstoredata),
+                  success: function (data) {
+                    console.log(data);
+                    vm.order = data.data;
+                  },
+                  error: function () {
+                    Swal.fire({
+                      title: "API介接錯誤?",
+                      text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                      icon: "error",
+                    });
+                  },
+                });
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=editorderstatusdata",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          orderdatainput() {
+            const vm = this;
+            var JSONdata = {};
+            JSONdata["store_id"] = vm.user.store_id;
+            $.ajax({
+              type: "POST",
+              url: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+              dataType: "json",
+              data: JSON.stringify(JSONdata),
+              success: function (data) {
+                vm.order = data.data;
+                vm.selectstatus = "全部";
+                vm.filterStatusData = vm.order;
+              },
+              error: function () {
+                Swal.fire({
+                  title: "API介接錯誤?",
+                  text: "http://192.168.10.73/peso/all/newproject/member_control_api_v1.php?action=getorderdata",
+                  icon: "error",
+                });
+              },
+            });
+          },
+          sortTable(column) {
+            if (this.sortBy === column) {
+              this.sortAsc = !this.sortAsc;
+            } else {
+              this.sortBy = column;
+              this.sortAsc = true;
+            }
+          },
+          filterOrders(month) {
+            if (!month) {
+              this.filteredOrders = [];
+              return;
+            }
+
+            const filtered = this.order.filter((orders) => {
+              return (
+                orders.status === "已支付" &&
+                orders.order_date.startsWith(month)
+              );
+            });
+
+            const processedOrderIds = new Set();
+
+            const result = [];
+            const grouped = filtered.reduce((acc, order) => {
+              if (acc[order.name]) {
+                acc[order.name].totalQuantity += order.quantity;
+              } else {
+                acc[order.name] = {
+                  name: order.name,
+                  totalQuantity: order.quantity,
+                  totalPrice: 0,
+                };
+              }
+
+              if (!processedOrderIds.has(order.order_id)) {
+                acc[order.name].totalPrice += order.total_price;
+                processedOrderIds.add(order.order_id);
+              }
+
+              return acc;
+            }, {});
+
+            for (const key in grouped) {
+              result.push(grouped[key]);
+            }
+
+            this.filteredOrders = result;
+          },
+        },
+        computed: {
+          sortedOrders() {
+            if (this.filterStatusData != null) {
+              return this.filterStatusData.sort((a, b) => {
+                if (this.sortAsc) {
+                  return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
+                } else {
+                  return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
+                }
+              });
+            }
+            return [
+              {
+                order_id: "",
+                name: "",
+                status: "",
+                quantity: "",
+                total_price: "",
+                order_date: "",
+              },
+            ];
+          },
+          filterStatusDataforPage() {
+            const vm = this;
+            let newData = [];
+            vm.sortedOrders.forEach((item, key) => {
+              if (key % 10 == 0) {
+                newData.push([]);
+              }
+              const page = parseInt(key / 10);
+              newData[page].push(item);
+            });
+            return newData;
+          },
+          uniquedate() {
+            if (this.order.length > 0) {
+              const filtered = this.order.filter((orders) => {
+                return orders.status === "已支付";
+              });
+              const uniqueMonths = [
+                ...new Set(
+                  filtered.map((item) => {
+                    const date = new Date(item.order_date);
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1)
+                      .toString()
+                      .padStart(2, "0");
+                    return `${year}-${month}`;
+                  })
+                ),
+              ];
+
+              return uniqueMonths.sort((a, b) => {
+                const dateA = new Date(a + "-01");
+                const dateB = new Date(b + "-01");
+                return dateB - dateA;
+              });
+            }
+          },
+          totalPrice() {
+            return this.filteredOrders.reduce(
+              (sum, item) => sum + item.totalPrice,
+              0
+            );
+          },
+        },
+        watch: {
+          order: function () {
+            const vm = this;
+            if (vm.filterStatusData != "") {
+              if (vm.selectstatus == "全部") {
+                vm.filterStatusData = vm.order;
+              } else {
+                vm.filterStatusData = [];
+                vm.order.forEach((item) => {
+                  if (item.status == vm.selectstatus) {
+                    vm.filterStatusData.push(item);
+                  }
+                });
+              }
+            }
+          },
+          selectstatus: function () {
+            const vm = this;
+            if (vm.filterStatusData != "") {
+              if (vm.selectstatus == "全部") {
+                vm.filterStatusData = vm.order;
+              } else {
+                vm.filterStatusData = [];
+                vm.order.forEach((item) => {
+                  if (item.status == vm.selectstatus) {
+                    vm.filterStatusData.push(item);
+                  }
+                });
+              }
+            }
+          },
+          selectdate(event) {
+            const vm = this;
+            vm.filterOrders(event);
+
+            vm.chartDataList.forEach(function (chartData) {
+              const newOption = { ...chartData.options };
+              let newSeries = [...chartData.series];
+              if (newOption.xaxis) {
+                newOption.xaxis.categories = [];
+              }
+              if (newSeries[0].data) {
+                newSeries[0].data = [];
+              }
+
+              vm.filteredOrders.forEach(function (item) {
+                if (newOption.xaxis) {
+                  newOption.xaxis.categories.push(item.name);
+                }
+                if (newSeries[0].data) {
+                  newSeries[0].data.push(item.totalQuantity);
+                }
+              });
+
+              if (chartData.options.chart.type === "donut") {
+                newOption.labels = vm.filteredOrders.map(function (item) {
+                  return item.name;
+                });
+                newSeries = vm.filteredOrders.map(function (item) {
+                  return item.totalQuantity;
+                });
+              }
+
+              chartData.options = newOption;
+              chartData.series = newSeries;
+            });
+          },
+        },
+      };
+      Vue.createApp(app).mount("#app");
+    </script>
+    <script>
+      $("#menuinfo").DataTable({
+        order: [[2, "asc"]],
+      });
+    </script>
+
+    <script>
+      $(function () {
+        $("#logout_btn").click(function () {
+          setCookie("Uid01", ",7");
+          location.href = "../index.html";
+        });
+      });
+    </script>
+  </body>
+</html>
