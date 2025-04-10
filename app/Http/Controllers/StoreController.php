@@ -2,81 +2,93 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stores;
 use Illuminate\Http\Request;
+use App\Models\Stores;
 use Illuminate\Routing\Controller;
 
 class StoreController extends Controller
 {
-    public function showMap()
+    private function respond($state, $message, $data = null)
     {
-        $cities = Stores::select('city')->distinct()->pluck('city');
-        return view('front.map', compact('cities'));
+        return response()->json(['state' => $state, 'message' => $message, 'data' => $data]);
     }
 
-    // 獲取所有城市
-    public function getCities()
-    {
-        $cities = Stores::select('city')->distinct()->get();
-        return response()->json([
-            'state' => true,
-            'message' => '取得城市成功',
-            'data' => $cities
-        ]);
-    }
-
-    // 根據城市獲取區域
-    public function getAreas(Request $request)
-    {
-        $validated = $request->validate(['city' => 'required|string']);
-        $areas = Stores::where('city', $validated['city'])
-            ->select('area')
-            ->distinct()
-            ->get();
-        return response()->json([
-            'state' => true,
-            'message' => '取得區域成功',
-            'data' => $areas
-        ]);
-    }
-
-    // 根據城市和區域獲取門市
-    public function getStoresByCityAndArea(Request $request)
-    {
-        $validated = $request->validate([
-            'city' => 'required|string',
-            'area' => 'required|string'
-        ]);
-        $stores = Stores::where('city', $validated['city'])
-            ->where('area', $validated['area'])
-            ->get(['store_id', 'name', 'address', 'tel', 'photo', 'latitude', 'longitude']);
-        return response()->json([
-            'state' => true,
-            'message' => '取得門市成功',
-            'data' => $stores
-        ]);
-    }
-
-    // 獲取所有門市（之前用於 map.blade.php）
-    public function getAllStores()
+    public function getAllStoreData()
     {
         $stores = Stores::all();
-        return response()->json([
-            'state' => true,
-            'message' => '取得所有門市資料成功',
-            'data' => $stores
-        ]);
+        return $this->respond($stores->isNotEmpty(), $stores->isNotEmpty() ? '取得所有門市資料成功' : '查無資料', $stores);
     }
 
-    public function checkStoreUnique(Request $request)
-{
-    $validated = $request->validate(['store_id' => 'required|integer']);
-    $store = Stores::find($validated['store_id']);
+    public function selectCityData()
+    {
+        $cities = Stores::join('areas', 'stores.area_id', '=', 'areas.area_id')
+            ->join('cities', 'areas.city_id', '=', 'cities.city_id')
+            ->distinct()
+            ->pluck('cities.name as city')
+            ->map(function ($city) {
+                return ['city' => $city];
+            })->values();
+        return $this->respond($cities->isNotEmpty(), $cities->isNotEmpty() ? '取得城市成功' : '查無資料', $cities);
+    }
 
-    return response()->json([
-        'state' => !!$store,
-        'message' => $store ? '門市存在' : '門市不存在',
-        'data' => $store ?: []
-    ]);
-}
+    public function selectAreaData(Request $request)
+    {
+        $city = trim($request->input('city'));
+        if (!$city) {
+            return $this->respond(false, '欄位不得為空白');
+        }
+
+        $areas = Stores::join('areas', 'stores.area_id', '=', 'areas.area_id')
+            ->join('cities', 'areas.city_id', '=', 'cities.city_id')
+            ->where('cities.name', $city)
+            ->distinct()
+            ->pluck('areas.name as area')
+            ->map(function ($area) {
+                return ['area' => $area];
+            })->values();
+        return $this->respond($areas->isNotEmpty(), $areas->isNotEmpty() ? '取得區域成功' : '查無資料', $areas);
+    }
+
+    public function selectStoreData(Request $request)
+    {
+        $city = trim($request->input('city'));
+        $area = trim($request->input('area'));
+
+        if (!$city || !$area) {
+            return $this->respond(false, '欄位不得為空白');
+        }
+
+        $stores = Stores::join('areas', 'stores.area_id', '=', 'areas.area_id')
+            ->join('cities', 'areas.city_id', '=', 'cities.city_id')
+            ->where('cities.name', $city)
+            ->where('areas.name', $area)
+            ->get();
+        return $this->respond($stores->isNotEmpty(), $stores->isNotEmpty() ? '取得門市資料成功' : '查無資料', $stores);
+    }
+
+    public function checkStoreUni(Request $request)
+    {
+        $store_id = trim($request->input('store_id'));
+        if (!$store_id) {
+            return $this->respond(false, '欄位不得為空白');
+        }
+
+        $store = Stores::where('store_id', $store_id)->first();
+        return $this->respond(!!$store, $store ? '商店代碼存在，商店代稱：' : '商店代碼不存在，不可使用', $store ? ['name' => $store->name] : null);
+    }
+
+    public function deleteStoreData(Request $request)
+    {
+        $store_id = trim($request->input('store_id'));
+        if (!$store_id) {
+            return $this->respond(false, '欄位不能為空');
+        }
+
+        $store = Stores::where('store_id', $store_id)->first();
+        if ($store) {
+            $store->delete();
+            return $this->respond(true, '店鋪刪除成功');
+        }
+        return $this->respond(false, '店鋪刪除失敗，商店代碼不存在');
+    }
 }

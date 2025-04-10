@@ -2,202 +2,161 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\OrderDetails;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    public function create(Request $request)
+    private function respond($state, $message, $data = null)
     {
+        return response()->json(['state' => $state, 'message' => $message, 'data' => $data]);
+    }
+
+    public function createOrder(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $store_id = $request->input('store_id');
+        $order_details = $request->input('order_details');
+
+        if (!$user_id || !$store_id || empty($order_details)) {
+            return $this->respond(false, '必填欄位不能為空或訂單明細無效');
+        }
+
+        DB::beginTransaction();
         try {
-            $validated = $request->validate([
-                'user_id' => 'required|integer|exists:users,user_id',
-                'store_id' => 'required|integer|exists:stores,store_id',
-                'total_price' => 'required|numeric|min:0',
-                'order_details' => 'required|array|min:1',
-                'order_details.*.menu_id' => 'required|integer|exists:menus,menu_id',
-                'order_details.*.quantity' => 'required|integer|min:1'
-            ]);
-
-            DB::beginTransaction();
-
-            // 使用資料庫中定義的 ENUM 值 '待支付'
             $order = Orders::create([
-                'user_id' => $validated['user_id'],
-                'store_id' => $validated['store_id'],
-                'total_price' => $validated['total_price'],
-                'status' => '待支付', // 修正為符合 ENUM 的值
-                'order_date' => now()
+                'store_id' => $store_id,
+                'user_id' => $user_id,
+                'status' => '待支付',
+                'order_date' => now(),
             ]);
 
-            foreach ($validated['order_details'] as $detail) {
+            foreach ($order_details as $detail) {
+                $menu = \App\Models\Menus::find($detail['menu_id']);
                 OrderDetails::create([
                     'order_id' => $order->order_id,
                     'menu_id' => $detail['menu_id'],
-                    'quantity' => $detail['quantity']
+                    'quantity' => $detail['quantity'],
+                    'price' => $menu->price,
                 ]);
             }
 
             DB::commit();
-
-            return response()->json([
-                'state' => true,
-                'message' => '訂單創建成功',
-                'data' => $order
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'state' => false,
-                'message' => '驗證失敗',
-                'errors' => $e->errors()
-            ], 422);
+            return $this->respond(true, '訂單處理成功');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('訂單創建失敗: ' . $e->getMessage(), [
-                'request' => $request->all(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json([
-                'state' => false,
-                'message' => '訂單創建失敗：' . $e->getMessage(),
-                'data' => null
-            ], 500);
+            return $this->respond(false, $e->getMessage());
         }
     }
 
-    // 獲取用戶訂單
-    public function userGetOrder(Request $request)
+    public function getOrderData(Request $request)
     {
-        try {
-            $validated = $request->validate(['user_id' => 'required|integer|exists:users,user_id']);
-            $orders = Orders::with('store')
-                            ->where('user_id', $validated['user_id'])
-                            ->get()
-                            ->map(function ($order) {
-                                return [
-                                    'order_id' => $order->order_id,
-                                    'name' => $order->store->name,
-                                    'address' => $order->store->address,
-                                    'total_price' => $order->total_price,
-                                    'status' => $order->status, // 直接使用資料庫值
-                                    'order_date' => $order->order_date
-                                ];
-                            });
-
-            return response()->json([
-                'state' => $orders->isNotEmpty(),
-                'message' => $orders->isNotEmpty() ? '取得訂單成功' : '無訂單記錄',
-                'data' => $orders
-            ]);
-        } catch (\Exception $e) {
-            Log::error('獲取訂單失敗: ' . $e->getMessage());
-            return response()->json([
-                'state' => false,
-                'message' => '獲取訂單失敗：' . $e->getMessage(),
-                'data' => null
-            ], 500);
+        $store_id = trim($request->input('store_id'));
+        if (!$store_id) {
+            return $this->respond(false, '欄位不能為空');
         }
+
+        $orders = Orders::where('orders.store_id', $store_id)
+    ->join('order_details', 'orders.order_id', '=', 'order_details.order_id')
+    ->join('menus', 'order_details.menu_id', '=', 'menus.menu_id')
+    ->join('stores', 'orders.store_id', '=', 'stores.store_id')
+    ->select(
+        'orders.order_id',
+        'stores.name as store_name',
+        'orders.status',
+        'menus.name',
+        'order_details.quantity',
+        DB::raw('SUM(order_details.quantity * order_details.price) as total_price'),
+        'orders.order_date',
+        'order_details.detail_id'
+    )
+    ->groupBy(
+        'orders.order_id', 
+        'stores.name', 
+        'orders.status', 
+        'menus.name', 
+        'order_details.quantity', 
+        'orders.order_date',
+        'order_details.detail_id'
+    )
+    ->orderBy('orders.order_id')
+    ->orderBy('order_details.detail_id')
+    ->get();
+
+        return $this->respond($orders->isNotEmpty(), $orders->isNotEmpty() ? '取得商店訂單資料成功' : '查無資料', $orders);
     }
 
-    // 獲取訂單明細
-    public function userGetOrderDetail(Request $request)
+    public function editOrderStatusData(Request $request)
     {
-        try {
-            $validated = $request->validate(['order_id' => 'required|integer|exists:orders,order_id']);
-            $details = OrderDetails::with('menu')
-                                   ->where('order_id', $validated['order_id'])
-                                   ->get()
-                                   ->map(function ($detail) {
-                                       return [
-                                           'name' => $detail->menu->name,
-                                           'price' => $detail->menu->price,
-                                           'quantity' => $detail->quantity
-                                       ];
-                                   });
+        $order_id = trim($request->input('order_id'));
+        $status = trim($request->input('status'));
 
-            return response()->json([
-                'state' => true,
-                'message' => '取得訂單明細成功',
-                'data' => $details
-            ]);
-        } catch (\Exception $e) {
-            Log::error('獲取訂單明細失敗: ' . $e->getMessage());
-            return response()->json([
-                'state' => false,
-                'message' => '獲取訂單明細失敗：' . $e->getMessage(),
-                'data' => null
-            ], 500);
+        if (!$order_id || !$status) {
+            return $this->respond(false, '欄位不能為空');
         }
+
+        $order = Orders::find($order_id);
+        if ($order && in_array($status, ['已支付', '已取消', '待支付'])) {
+            $order->update(['status' => $status]);
+            return $this->respond(true, '訂單狀態更新成功');
+        }
+        return $this->respond(false, '訂單狀態更新失敗，欄位錯誤');
     }
 
-    // 編輯訂單狀態
-    public function editOrderStatus(Request $request)
+    public function userGetOrderData(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'order_id' => 'required|integer|exists:orders,order_id',
-                'status' => 'required|in:待支付,已支付,已取消'
-            ]);
-
-            $order = Orders::findOrFail($validated['order_id']);
-            $order->status = $validated['status'];
-            $order->save();
-
-            return response()->json([
-                'state' => true,
-                'message' => '訂單狀態更新成功',
-                'data' => $order
-            ]);
-        } catch (\Exception $e) {
-            Log::error('訂單狀態更新失敗: ' . $e->getMessage());
-            return response()->json([
-                'state' => false,
-                'message' => '訂單狀態更新失敗：' . $e->getMessage(),
-                'data' => null
-            ], 500);
+        $user_id = trim($request->input('user_id'));
+        if (!$user_id) {
+            return $this->respond(false, '欄位不能為空');
         }
+
+        $orders = Orders::where('user_id', $user_id)
+            ->join('stores', 'orders.store_id', '=', 'stores.store_id')
+            ->join('order_details', 'orders.order_id', '=', 'order_details.order_id')
+            ->select(
+                'orders.order_id',
+                'orders.status',
+                DB::raw('SUM(order_details.quantity * order_details.price) as total_price'),
+                'orders.order_date',
+                'stores.name',
+                'stores.address'
+            )
+            ->groupBy('orders.order_id', 'orders.status', 'orders.order_date', 'stores.name', 'stores.address')
+            ->get();
+
+        return $this->respond($orders->isNotEmpty(), $orders->isNotEmpty() ? '取得用戶訂單資料成功' : '查無資料', $orders);
     }
 
-    // 獲取店家訂單
-    public function getStoreOrders(Request $request)
+    public function userGetOrderDetailData(Request $request)
     {
-        try {
-            $validated = $request->validate(['store_id' => 'required|integer|exists:stores,store_id']);
-            $orders = Orders::with('orderDetails.menu')
-                            ->where('store_id', $validated['store_id'])
-                            ->get()
-                            ->flatMap(function ($order) {
-                                return $order->orderDetails->map(function ($detail) use ($order) {
-                                    return [
-                                        'order_id' => $order->order_id,
-                                        'name' => $detail->menu->name,
-                                        'status' => $order->status,
-                                        'quantity' => $detail->quantity,
-                                        'total_price' => $order->total_price,
-                                        'order_date' => $order->order_date
-                                    ];
-                                });
-                            });
-
-            return response()->json([
-                'state' => $orders->isNotEmpty(),
-                'message' => $orders->isNotEmpty() ? '獲取訂單成功' : '無訂單記錄',
-                'data' => $orders
-            ]);
-        } catch (\Exception $e) {
-            Log::error('獲取店家訂單失敗: ' . $e->getMessage());
-            return response()->json([
-                'state' => false,
-                'message' => '獲取店家訂單失敗：' . $e->getMessage(),
-                'data' => null
-            ], 500);
+        $order_id = trim($request->input('order_id'));
+        if (!$order_id) {
+            return $this->respond(false, '欄位不能為空');
         }
+
+        $details = OrderDetails::where('order_id', $order_id)
+            ->join('menus', 'order_details.menu_id', '=', 'menus.menu_id')
+            ->select('menus.name', 'menus.price', 'order_details.quantity')
+            ->get();
+
+        return $this->respond($details->isNotEmpty(), $details->isNotEmpty() ? '取得用戶訂單資料成功' : '查無資料', $details);
     }
 
-    
+    public function deleteOrderData(Request $request)
+{
+    $order_id = trim($request->input('order_id'));
+    if (!$order_id) {
+        return $this->respond(false, '欄位不能為空');
+    }
+
+    $order = Orders::find($order_id);
+    if ($order) {
+        $order->delete();
+        return $this->respond(true, '訂單刪除成功');
+    }
+    return $this->respond(false, '訂單刪除失敗，訂單不存在');
 }
-
+}
