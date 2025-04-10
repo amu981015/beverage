@@ -1,66 +1,64 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🔌 Laravel API 服務端專案（分支：laravelapi）
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+本分支為整個點餐系統的後端核心，採用 Laravel 框架撰寫，提供 RESTful API 給前端（vue 分支）進行串接。涵蓋使用者驗證、菜單管理、訂單處理、店家查詢等功能，資料庫設計遵循第三正規化（3NF）。
 
-## About Laravel
+📌 專案簡介
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+所有 API 路由定義於 routes/api.php，統一管理並使用中介層進行權限保護。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+API 主要由以下控制器提供對應功能：
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+UserController.php：處理使用者註冊、登入與驗證。
 
-## Learning Laravel
+MenuController.php：提供菜單查詢、上架、下架等功能。
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+OrderController.php：處理新增訂單、查詢訂單、報表統計。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+StoreController.php：提供地圖相關資料查詢（如店鋪位置、分店清單）。
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+AdminController.php：管理店長帳號與權限相關功能（新增、編輯、查詢等）。
 
-## Laravel Sponsors
+🧠 控制器職責說明
+控制器	功能說明
+UserController	註冊 / 登入 / Token 驗證
+MenuController	菜單取得 / 上架 / 下架 / 編輯 / 刪除（使用軟刪除）
+OrderController	新增訂單 / 查詢訂單 / 產生報表
+StoreController	取得所有分店資料 / 提供地圖座標 / 店鋪分類
+AdminController	建立或管理店長帳號 / 變更角色 / 瀏覽後台資料
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+🗃️ 資料庫設計
+資料表設計符合 3NF 第三正規化，提升資料一致性與查詢效率。
 
-### Premium Partners
+使用 Laravel 原生 Migration 與 Eloquent ORM 操作資料表。
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+關鍵資料表包含：
 
-## Contributing
+users：使用者帳號（含角色識別）
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+menus：餐點資料
 
-## Code of Conduct
+orders：訂單資料
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+stores：分店資訊
 
-## Security Vulnerabilities
+store_managers：店長帳號關聯
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+🧹 軟刪除實作
+使用 Laravel SoftDeletes 機制，保留被刪除資料以利資料追蹤與還原。
 
-## License
+避免直接移除重要資料，提升系統安全性與可管理性。
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+🔗 與前端串接
+此分支為 vue 分支 的後端 API 來源，所有前端請求均串接此服務。
+
+資料互動格式統一採用 JSON，支援 axios 等前端框架呼叫。
+
+使用 Laravel Sanctum 管理登入狀態與 API 驗證。
+
+🧰 使用技術
+分類	技術 / 工具
+🖥️ 後端	Laravel、PHP
+🔗 API	RESTful、Laravel Route、Controller 架構
+🔐 認證	Laravel Sanctum（Token 驗證）
+💾 資料庫	MySQL、Laravel Eloquent ORM、3NF
+🛠️ 工具	Git / GitHub、Postman（API 測試）、Figma
