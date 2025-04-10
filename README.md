@@ -1,44 +1,55 @@
-# 📦 html-js-php 專案
+# 🍔 HTML + JS + PHP 餐飲點餐系統（分支：html-js-php）
 
-本專案為使用 HTML + CSS (Bootstrap) + JavaScript (jQuery + Vue CDN) + PHP (MySQLi) 所開發的多角色點餐系統。依使用者身份不同提供不同的後台功能，並搭配地圖顯示功能以提供便利的商店查詢體驗。
-
----
-
-## 🔸 專案架構說明
-
-### 🖼️ 前台
-
-- 以 `index.html` 為主頁，透過 jQuery 動態載入其他區塊頁面（如 header、footer、主內容）。
-- `map.html` 結合 `leaflet.markercluster` 地圖群聚標記插件，實作商店地點查詢功能。
-
-### 🛠️ 後台
-
-後台根據使用者身份分為三種：
-
-- **admin.html**：一般用戶後台，可用來點餐、查看個人訂單明細。
-- **storebackground.html**：地區店長後台，可查看本店訂單與營收報表。
-- **background.html**：總公司後台，可新增菜單、管理地區店長、查看所有分店訂單與營收報表。
-
-後台頁面使用 Vue (CDN) 實作，搭配 `v-if` 控制畫面顯示。
+本分支為一套以純前後端技術實作的線上點餐系統，使用 HTML、CSS（Bootstrap）、JavaScript（jQuery） 與 PHP（MySQLi）打造，並具備前台與多層級後台功能，實作簡易、功能完整，適合作為學習與展示用途。
 
 ---
 
-## 🔗 後端 API
+## 📌 系統架構說明
 
-- 所有 API 集中撰寫於 `member_control_api_v1.php`。
-- 使用 MySQLi 與原生 PHP 撰寫，支援以下功能：
-  - 使用者登入與註冊
-  - 取得菜單資料
-  - 訂單相關操作
+### 🖥️ 前台功能
 
-前端透過 AJAX 向 API 發送請求，實現資料動態互動。
+- 使用 `index.html` 為入口頁面。
+- 透過 **jQuery** 動態載入各個頁面（如 menu、map 等）整合至 index 顯示。
+- **地圖查詢功能：**
+  - 在 `map.html` 中導入 `leaflet.markercluster`，讓使用者能快速查詢各分店位置。
+- **動態菜單顯示：**
+  - 在 `menu.html` 中，會即時顯示總公司後台上架的菜單，當菜單異動時頁面自動反映。
+
+---
+
+### 🔧 後台功能
+
+- 後台採用 HTML + Bootstrap + jQuery 搭配 **Vue-CDN**。
+- 透過 `v-if` 控制各個功能區塊顯示，頁面管理更簡潔。
+
+| 頁面              | 角色        | 功能簡述                                                   |
+|-------------------|-------------|------------------------------------------------------------|
+| `admin.html`      | 一般使用者  | 訂餐系統、訂單查詢                                         |
+| `storebackground.html` | 店長 | 查看本店訂單、報表統計                                     |
+| `background.html` | 總公司管理者 | 菜單管理、店長帳號管理、各店訂單與報表查詢                 |
+
+---
+
+### 🔗 API 與後端說明
+
+- 所有後端 API 集中撰寫於 `member_control_api_v1.php`
+- 採用 PHP + MySQLi 開發，提供以下功能：
+
+| 功能類型 | 說明                         |
+|----------|------------------------------|
+| 帳號     | 註冊、登入                   |
+| 菜單     | 查詢現有菜單、自動顯示上下架 |
+| 訂單     | 查詢訂單明細、各角色專屬介面 |
 
 ---
 
 ## 🧰 使用技術
 
-| 類別 | 技術 / 工具 |
-|------|-------------|
-| 前端 | HTML5、CSS3、Bootstrap、JavaScript、jQuery、Vue (CDN)、AJAX、SweetAlert、leaflet.markercluster、leaflet-color-markers、WOW.js、animate.css |
-| 後端 | PHP (MySQLi) |
-| 資料庫 | MySQL |
+| 分類        | 技術 / 工具                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| 🔧 前端      | HTML5、CSS3、Bootstrap、JavaScript、jQuery、Vue（CDN）、Leaflet.markercluster |
+| 🖥️ 後端     | PHP（MySQLi）                                                              |
+| 💾 資料庫    | MySQL                                                                       |
+| 🛠️ 其他工具 | Git / GitHub、Figma                                                         |
+
+---
