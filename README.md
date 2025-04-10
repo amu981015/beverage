@@ -18,11 +18,11 @@ API 主要由以下控制器提供對應功能：
 
 | 控制器          | 功能說明                                   |
 | ------------- | ------------------------------------------ |
-| `UserController` | 註冊 / 登入 / Token 驗證                    |
+| `UserController` | 註冊 / 登入 / Uid 驗證                    |
 | `MenuController` | 菜單取得 / 上架 / 下架 / 編輯 / 刪除（使用軟刪除） |
 | `OrderController` | 新增訂單 / 查詢訂單 / 產生報表                |
 | `StoreController` | 取得所有分店資料 / 提供地圖座標 / 店鋪分類      |
-| `AdminController` | 建立或管理店長帳號 / 變更角色 / 瀏覽後台資料    |
+| `AdminController` | 建立或管理店長帳號 /  瀏覽後台資料    |
 
 🗃️ **資料庫設計**
 
@@ -36,7 +36,6 @@ API 主要由以下控制器提供對應功能：
 * `menus`：餐點資料
 * `orders`：訂單資料
 * `stores`：分店資訊
-* `store_managers`：店長帳號關聯
 
 🧹 **軟刪除實作**
 
@@ -46,11 +45,11 @@ API 主要由以下控制器提供對應功能：
 
 🔗 **與前端串接**
 
-此分支為 [vue 分支](https://github.com/your-repo/vue) 的後端 API 來源，所有前端請求均串接此服務。
+此分支為 [vue 分支] 的後端 API 來源，所有前端請求均串接此服務。
 
 資料互動格式統一採用 **JSON**，支援 `axios` 等前端框架呼叫。
 
-使用 Laravel Sanctum 管理登入狀態與 API 驗證。
+使用 cors 與 API 驗證。
 
 🧰 **使用技術**
 
