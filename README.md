@@ -1,66 +1,43 @@
-# 面試專案總覽
+# 💼 面試專案總覽
 
-本專案為面試準備的綜合展示，根據不同的技術棧與實作方式，分為數個分支進行開發。  
-每個分支代表一種架構或開發方式，展示我對於不同前後端技術的掌握與整合能力。
+歡迎來到我的專案倉庫！這裡包含多個我在學習與開發過程中實作的全端應用範例，整合前後端技術，展示不同開發架構的應用方式，方便面試時展示技術能力與架構理解。
 
----
+## 📁 分支簡介
 
-## 🔀 分支說明
-
-### `html-js-php`
-
-使用傳統開發方式進行建構：
-
-- **Frontend**: HTML, CSS (Bootstrap), JavaScript (jQuery + Vue CDN)
-- **Backend**: PHP (使用 `mysqli`)
-- **Database**: MySQL
-
-此分支適合展示無框架環境下的純手寫開發能力，適用於中小型網站。
+| 分支名稱          | 說明                                                                 |
+|-------------------|----------------------------------------------------------------------|
+| `main`            | 📄 僅包含本 README，用於說明各個分支的功能與技術架構。                   |
+| `html-js-php`     | 🧱 使用 HTML + CSS (Bootstrap) + JS (jQuery + Vue-CDN) + PHP (MySQLi) 開發的專案。 |
+| `html-vue-php`    | 🌐 使用 Vue-CDN 結合 HTML + Bootstrap + PHP (MySQLi) 開發的版本。         |
+| `laravel`         | 🧩 使用 Laravel + Blade 模板引擎打造的後端專案。                          |
+| `vue`             | ⚙️ 使用 Vue CLI 建立的前端專案，採用元件化開發。                         |
+| `laravelapi`      | 🔗 Laravel 作為 API 後端，Vue 作為前端，進行前後端分離開發的完整範例。        |
 
 ---
 
-### `html-vue-php`
+## 🧰 使用技術與工具
 
-- 前端使用 Vue (透過 CDN) 重構部分 UI
-- 後端仍為 PHP（`mysqli`）
-- 強調前端互動性與 SPA 思維的初步結合
-
----
-
-### `vue`
-
-- 純前端專案，使用 Vue CLI 建構 SPA
-- 無後端整合
-- 展示組件化開發與 Vue 生態系操作（Vue Router、Vuex）
+| 分類        | 技術 / 工具                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| 🔧 前端      | HTML5、CSS3、Bootstrap、JavaScript、jQuery、Vue 3、SweetAlert、ApexCharts、AJAX、WOW.js、animate.css、leaflet.markercluster、leaflet-color-markers |
+| 🖥️ 後端     | PHP（MySQLi）、Laravel、Laravel API                                          |
+| 💾 資料庫    | MySQL                                                                       |
+| 🛠️ 其他工具 | Git / GitHub、Figma、Linux（Ubuntu）                                        |
 
 ---
 
-### `laravel`
+## 📝 使用方式
 
-- 完整的 Laravel MVC 架構
-- Blade 模板引擎呈現頁面
-- 適合展示 Laravel 的基本用法與傳統全端流程
-
----
-
-### `laravelapi`
-
-- 使用 Laravel 建構 RESTful API
-- 適合作為前後端分離架構中的後端 API 提供者
-- 通常搭配 `vue` 分支前端使用
+1. 請依據你想參考的架構切換至對應分支（例如：`laravel` 或 `vue`）。
+2. 每個分支都有對應的專案結構與程式碼，皆可本地部署與測試。
+3. 若需資料庫匯入檔、環境檔或其他協助，請聯絡我或參考各分支內的說明。
 
 ---
 
-## 🗂 主分支用途
+## 📬 聯絡方式
 
-本 `main` 分支僅作為各個功能分支的導覽與說明，不包含實作程式碼。  
-請根據需求切換至相對應的分支查看詳細內容與程式碼實作。
+若您對我的專案有興趣或想進一步了解，歡迎透過 GitHub Issues 或 [加入連絡方式如 Email、LinkedIn 等] 與我聯繫。
 
 ---
 
-## 📌 分支切換方式
-
-```bash
-git checkout 分支名稱
-
-```
+感謝您的閱讀與觀看 🙏
