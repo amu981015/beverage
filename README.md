@@ -1,5 +1,50 @@
-# Vue 3 + Vite
+# 🧭 Vue CLI 餐飲點餐系統前端專案（分支：vue）
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.orghttp://laravel.local/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+本分支使用 Vue CLI 建構單頁式前後台點餐系統，前台整合地圖與動態菜單功能，後台則依使用者身分分為三種權限層級，並透過 Vue Router 與元件化設計實現動態頁面切換。本分支專注於前端，後端資料調用來自 [`laravelapi`](https://github.com/你的帳號/你的專案/tree/laravelapi) 分支提供的 API。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+---
+
+## 🖥️ 前台功能說明
+
+- 專案以 Vue CLI 建構，支援模組化與元件化開發。
+- 使用 Bootstrap + jQuery + Vue 進行樣式與互動設計。
+- **地圖查詢功能：**
+  - 在 `Map` 頁面中整合 `leaflet.markercluster` 呈現分店位置。
+- **動態菜單功能：**
+  - `Menu` 頁面透過 API 獲取後台上架菜單，菜單資料即時更新。
+- Vue Router 控制頁面切換，無需重新載入。
+
+---
+
+## 🔧 後台功能說明
+
+- 三種後台角色（透過路由分流並對應元件）：
+
+| 路由名稱             | 使用者角色       | 功能說明                                                  |
+|----------------------|------------------|-----------------------------------------------------------|
+| `/admin`             | 一般用戶         | 點餐、查看訂單紀錄                                         |
+| `/storebackground`   | 分店店長         | 檢視本店訂單資料、報表統計                                 |
+| `/background`        | 總公司管理者     | 新增／上下架菜單、新增店長、總覽各分店訂單與報表           |
+
+- 所有後台頁面皆使用 Vue component 元件組裝，畫面切換使用 `<router-view>` 控制。
+
+---
+
+## 🔗 與後端整合說明
+
+- 所有資料皆透過 `laravelapi` 分支中提供的 RESTful API 進行資料交換。
+- 包含登入驗證、菜單查詢、訂單提交、報表統計等。
+- API 呼叫使用 Axios 實作，資料以 JSON 格式交換。
+
+---
+
+## 🧰 使用技術
+
+| 分類        | 技術 / 工具                                                                 |
+|-------------|------------------------------------------------------------------------------|
+| 🔧 前端      | Vue CLI、Vue Router、Vue 3、JavaScript、Bootstrap、jQuery、Axios、Leaflet.markercluster |
+| 🖥️ 後端 API | Laravel（參考分支：`laravelapi`）                                            |
+| 💾 資料庫    | MySQL（透過後端操作）                                                        |
+| 🛠️ 其他工具 | Git / GitHub、Figma、Node.js、npm                                             |
+
+---
