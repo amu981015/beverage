@@ -75,16 +75,10 @@
 | 📡 串接     | RESTful API, Vue Router, Axios                                   |
 | 💾 資料庫   | MySQL、符合第三正規化（3NF）                                     |
 | 🛠️ 工具     | Git / GitHub, Figma, Postman, Ubuntu (開發環境)                  |
+| 🛠️ AI     | ChatGPT, Grok, Claude                  |
 
 ---
 
-## 🧪 面試建議使用方式
-
-- 👉 **想展示傳統網頁技術** → 使用 `html-js-php` 或 `html-vue-php`。
-- 👉 **想展示 Laravel 網頁整合能力** → 使用 `laravel` 分支。
-- 👉 **想展示 API + SPA 前後端分離能力** → 結合 `vue` + `laravelapi` 分支。
-
----
 
 ## 📬 聯絡與合作
 
