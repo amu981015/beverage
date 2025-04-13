@@ -75,7 +75,7 @@
 | 📡 串接         | RESTful API, Vue Router, Axios                                                                   |
 | 💾 資料庫       | MySQL（符合第三正規化 3NF）                                                                       |
 | ☁️ 雲端平台     | AWS（Amazon Web Services）、GCP（Google Cloud Platform）                                          |
-| 🛠️ 開發工具     | Git / GitHub, Figma, Postman, VS Code, Cursor, VMware, Ubuntu（開發環境）                                |
+| 🛠️ 開發工具     | Git / GitHub, Figma, Postman, VS Code, Cursor, VirtualBox, Ubuntu（開發環境）                                |
 | 🤖 AI 助手      | ChatGPT, Claude, Grok                                                                            |
 
 
