@@ -74,7 +74,7 @@
 | 🖥️ 後端     | PHP (MySQLi), Laravel (Blade + API), MVC 架構                    |
 | 📡 串接     | RESTful API, Vue Router, Axios                                   |
 | 💾 資料庫   | MySQL、符合第三正規化（3NF）                                     |
-| 🛠️ 工具     | Git / GitHub, Figma, Postman, Ubuntu (開發環境)                  |
+| 🛠️ 工具     | Git / GitHub, Figma, Postman, Ubuntu (開發環境), vs Code, cursor                  |
 | 🛠️ AI     | ChatGPT, Grok, Claude                  |
 
 ---
