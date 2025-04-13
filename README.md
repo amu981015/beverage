@@ -68,14 +68,16 @@
 
 ## 🔧 使用技術總覽
 
-| 類別        | 技術/工具                                                       |
-|-------------|------------------------------------------------------------------|
-| 🔍 前端     | HTML5, CSS3, Bootstrap, JavaScript, jQuery, Vue (CDN / CLI), AJAX, Leaflet, ApexCharts, SweetAlert, wow.js, animate.css |
-| 🖥️ 後端     | PHP (MySQLi), Laravel (Blade + API), MVC 架構                    |
-| 📡 串接     | RESTful API, Vue Router, Axios                                   |
-| 💾 資料庫   | MySQL、符合第三正規化（3NF）                                     |
-| 🛠️ 工具     | Git / GitHub, Figma, Postman, Ubuntu (開發環境), vs Code, cursor                  |
-| 🛠️ AI     | ChatGPT, Grok, Claude                  |
+| 類別            | 技術 / 工具                                                                                      |
+|-----------------|--------------------------------------------------------------------------------------------------|
+| 🔍 前端         | HTML5, CSS3, Bootstrap, JavaScript, jQuery, Vue (CDN / CLI), AJAX, Leaflet, ApexCharts, SweetAlert, wow.js, animate.css |
+| 🖥️ 後端         | PHP (MySQLi), Laravel (Blade / API), MVC 架構                                                    |
+| 📡 串接         | RESTful API, Vue Router, Axios                                                                   |
+| 💾 資料庫       | MySQL（符合第三正規化 3NF）                                                                       |
+| ☁️ 雲端平台     | AWS（Amazon Web Services）、GCP（Google Cloud Platform）                                          |
+| 🛠️ 開發工具     | Git / GitHub, Figma, Postman, VS Code, Cursor, Ubuntu（開發環境）                                |
+| 🤖 AI 助手      | ChatGPT, Claude, Grok                                                                            |
+
 
 ---
 
